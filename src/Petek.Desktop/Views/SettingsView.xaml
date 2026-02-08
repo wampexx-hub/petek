@@ -1,0 +1,298 @@
+<Page x:Class="Petek.Desktop.Views.SettingsView"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      mc:Ignorable="d"
+      Background="{DynamicResource BackgroundBrush}">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="32">
+            <!-- Header -->
+            <TextBlock Text="Ayarlar"
+                       FontSize="28"
+                       FontWeight="SemiBold"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       Margin="0,0,0,24"/>
+
+            <!-- Appearance Section -->
+            <Border Background="{DynamicResource CardBackgroundBrush}"
+                    CornerRadius="{StaticResource MediumCornerRadius}"
+                    Padding="20"
+                    Margin="0,0,0,16">
+                <StackPanel>
+                    <TextBlock Text="Görünüm"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextPrimaryBrush}"
+                               Margin="0,0,0,16"/>
+
+                    <!-- Theme Selection -->
+                    <Grid Margin="0,0,0,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Text="Tema"
+                                       Foreground="{DynamicResource TextPrimaryBrush}"/>
+                            <TextBlock Text="Uygulama temasını seçin"
+                                       FontSize="12"
+                                       Foreground="{DynamicResource TextSecondaryBrush}"/>
+                        </StackPanel>
+                        <ComboBox Grid.Column="1"
+                                  x:Name="ThemeComboBox"
+                                  Width="150"
+                                  SelectionChanged="ThemeComboBox_SelectionChanged">
+                            <ComboBoxItem Content="Sistem"/>
+                            <ComboBoxItem Content="Açık"/>
+                            <ComboBoxItem Content="Koyu"/>
+                        </ComboBox>
+                    </Grid>
+
+                    <!-- Acrylic Effect -->
+                    <Grid Margin="0,0,0,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Text="Şeffaflık Efektleri"
+                                       Foreground="{DynamicResource TextPrimaryBrush}"/>
+                            <TextBlock Text="Akrilik ve mica efektlerini kullan"
+                                       FontSize="12"
+                                       Foreground="{DynamicResource TextSecondaryBrush}"/>
+                        </StackPanel>
+                        <CheckBox Grid.Column="1"
+                                  IsChecked="True"
+                                  VerticalAlignment="Center"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- File Storage Section -->
+            <Border Background="{DynamicResource CardBackgroundBrush}"
+                    CornerRadius="{StaticResource MediumCornerRadius}"
+                    Padding="20"
+                    Margin="0,0,0,16">
+                <StackPanel>
+                    <TextBlock Text="Dosya Depolama"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextPrimaryBrush}"
+                               Margin="0,0,0,16"/>
+
+                    <!-- Download Location -->
+                    <Grid Margin="0,0,0,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Text="İndirme Konumu"
+                                       Foreground="{DynamicResource TextPrimaryBrush}"/>
+                            <TextBlock Text="Alınan dosyaların kaydedileceği klasör"
+                                       FontSize="12"
+                                       Foreground="{DynamicResource TextSecondaryBrush}"/>
+                        </StackPanel>
+                    </Grid>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox x:Name="DownloadPathBox"
+                                 Style="{StaticResource FluentTextBox}"
+                                 IsReadOnly="True"
+                                 Grid.Column="0"/>
+                        <Button Grid.Column="1"
+                                Style="{StaticResource AccentButton}"
+                                Content="Gözat..."
+                                Padding="16,8"
+                                Margin="8,0,0,0"
+                                Click="BrowseDownloadFolder_Click"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Notifications Section -->
+            <Border Background="{DynamicResource CardBackgroundBrush}"
+                    CornerRadius="{StaticResource MediumCornerRadius}"
+                    Padding="20"
+                    Margin="0,0,0,16">
+                <StackPanel>
+                    <TextBlock Text="Bildirimler"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextPrimaryBrush}"
+                               Margin="0,0,0,16"/>
+
+                    <!-- Desktop Notifications -->
+                    <Grid Margin="0,0,0,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Text="Masaüstü Bildirimleri"
+                                       Foreground="{DynamicResource TextPrimaryBrush}"/>
+                            <TextBlock Text="Yeni mesajlarda bildirim göster"
+                                       FontSize="12"
+                                       Foreground="{DynamicResource TextSecondaryBrush}"/>
+                        </StackPanel>
+                        <CheckBox Grid.Column="1"
+                                  IsChecked="True"
+                                  VerticalAlignment="Center"/>
+                    </Grid>
+
+                    <!-- Sound -->
+                    <Grid Margin="0,0,0,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Text="Sesli Bildirimler"
+                                       Foreground="{DynamicResource TextPrimaryBrush}"/>
+                            <TextBlock Text="Yeni mesajlarda ses çal"
+                                       FontSize="12"
+                                       Foreground="{DynamicResource TextSecondaryBrush}"/>
+                        </StackPanel>
+                        <CheckBox Grid.Column="1"
+                                  IsChecked="True"
+                                  VerticalAlignment="Center"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Status Section -->
+            <Border Background="{DynamicResource CardBackgroundBrush}"
+                    CornerRadius="{StaticResource MediumCornerRadius}"
+                    Padding="20"
+                    Margin="0,0,0,16">
+                <StackPanel>
+                    <TextBlock Text="Durum"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextPrimaryBrush}"
+                               Margin="0,0,0,16"/>
+
+                    <!-- Auto Away -->
+                    <Grid Margin="0,0,0,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Text="Otomatik Dışarıda"
+                                       Foreground="{DynamicResource TextPrimaryBrush}"/>
+                            <TextBlock Text="İşlem yapılmadığında durumu 'Dışarıda' yap"
+                                       FontSize="12"
+                                       Foreground="{DynamicResource TextSecondaryBrush}"/>
+                        </StackPanel>
+                        <CheckBox Grid.Column="1"
+                                  IsChecked="True"
+                                  VerticalAlignment="Center"/>
+                    </Grid>
+
+                    <!-- Away Timeout -->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Text="Dışarıda Süresi"
+                                       Foreground="{DynamicResource TextPrimaryBrush}"/>
+                            <TextBlock Text="Belirtilen süre sonunda durumu değiştir"
+                                       FontSize="12"
+                                       Foreground="{DynamicResource TextSecondaryBrush}"/>
+                        </StackPanel>
+                        <ComboBox Grid.Column="1"
+                                  Width="150">
+                            <ComboBoxItem Content="5 dakika" IsSelected="True"/>
+                            <ComboBoxItem Content="10 dakika"/>
+                            <ComboBoxItem Content="15 dakika"/>
+                            <ComboBoxItem Content="30 dakika"/>
+                        </ComboBox>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Server Connection Section -->
+            <Border Background="{DynamicResource CardBackgroundBrush}"
+                    CornerRadius="{StaticResource MediumCornerRadius}"
+                    Padding="20"
+                    Margin="0,0,0,16">
+                <StackPanel>
+                    <TextBlock Text="Sunucu Bağlantısı"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextPrimaryBrush}"
+                               Margin="0,0,0,16"/>
+
+                    <!-- Server URL -->
+                    <Grid Margin="0,0,0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Text="Sunucu Adresi"
+                                       Foreground="{DynamicResource TextPrimaryBrush}"/>
+                            <TextBlock Text="Petek Messenger sunucusunun adresi"
+                                       FontSize="12"
+                                       Foreground="{DynamicResource TextSecondaryBrush}"/>
+                        </StackPanel>
+                    </Grid>
+                    <Grid Margin="0,0,0,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox x:Name="ServerUrlBox"
+                                 Style="{StaticResource FluentTextBox}"
+                                 Tag="http://localhost:5000"
+                                 Grid.Column="0"/>
+                        <Button Grid.Column="1"
+                                Style="{StaticResource AccentButton}"
+                                Content="Kaydet"
+                                Padding="16,8"
+                                Margin="8,0,0,0"
+                                Click="SaveServerUrl_Click"/>
+                    </Grid>
+
+                    <TextBlock x:Name="ServerUrlStatus"
+                               FontSize="11"
+                               Foreground="{DynamicResource TextTertiaryBrush}"
+                               Margin="0,0,0,0"
+                               TextWrapping="Wrap"/>
+                </StackPanel>
+            </Border>
+
+            <!-- About Section -->
+            <Border Background="{DynamicResource CardBackgroundBrush}"
+                    CornerRadius="{StaticResource MediumCornerRadius}"
+                    Padding="20">
+                <StackPanel>
+                    <TextBlock Text="Hakkında"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextPrimaryBrush}"
+                               Margin="0,0,0,16"/>
+
+                    <TextBlock Text="Petek Messenger"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextPrimaryBrush}"/>
+                    <TextBlock Text="Sürüm 1.0.0"
+                               FontSize="12"
+                               Foreground="{DynamicResource TextSecondaryBrush}"
+                               Margin="0,4,0,0"/>
+                    <TextBlock Text="Kurumsal iç iletişim uygulaması"
+                               FontSize="12"
+                               Foreground="{DynamicResource TextTertiaryBrush}"
+                               Margin="0,4,0,0"/>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

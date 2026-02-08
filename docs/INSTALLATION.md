@@ -1,6 +1,6 @@
-# Ekip Messenger Sunucu Kurulum Rehberi
+# Petek Messenger Sunucu Kurulum Rehberi
 
-Bu doküman, Ekip Messenger sunucusunun kurulumu, yapılandırılması ve production ortamına deploy edilmesi için gerekli adımları içerir.
+Bu doküman, Petek Messenger sunucusunun kurulumu, yapılandırılması ve production ortamına deploy edilmesi için gerekli adımları içerir.
 
 ## Sistem Gereksinimleri
 
@@ -61,22 +61,22 @@ sudo systemctl enable postgresql
 
 # Veritabanı ve kullanıcı oluştur
 sudo -u postgres psql << EOF
-CREATE USER ekip_user WITH PASSWORD 'GucluSifre123!';
-CREATE DATABASE ekip OWNER ekip_user;
-GRANT ALL PRIVILEGES ON DATABASE ekip TO ekip_user;
+CREATE USER Petek_user WITH PASSWORD 'GucluSifre123!';
+CREATE DATABASE Petek OWNER Petek_user;
+GRANT ALL PRIVILEGES ON DATABASE Petek TO Petek_user;
 EOF
 ```
 
 #### Docker ile (Önerilen)
 ```bash
 docker run -d \
-  --name ekip-postgres \
+  --name Petek-postgres \
   --restart unless-stopped \
   -p 5432:5432 \
-  -e POSTGRES_USER=ekip_user \
+  -e POSTGRES_USER=Petek_user \
   -e POSTGRES_PASSWORD=GucluSifre123! \
-  -e POSTGRES_DB=ekip \
-  -v ekip-postgres-data:/var/lib/postgresql/data \
+  -e POSTGRES_DB=Petek \
+  -v Petek-postgres-data:/var/lib/postgresql/data \
   postgres:15-alpine
 ```
 
@@ -99,10 +99,10 @@ sudo systemctl enable redis-server
 #### Docker ile (Önerilen)
 ```bash
 docker run -d \
-  --name ekip-redis \
+  --name Petek-redis \
   --restart unless-stopped \
   -p 6379:6379 \
-  -v ekip-redis-data:/data \
+  -v Petek-redis-data:/data \
   redis:7-alpine redis-server --requirepass GucluRedisParola123!
 ```
 
@@ -111,28 +111,28 @@ docker run -d \
 #### Kaynak Koddan Derleme
 ```bash
 # Kaynak kodu klonla
-git clone https://github.com/your-org/ekip.git
-cd ekip
+git clone https://github.com/your-org/Petek.git
+cd Petek
 
 # Release build
-dotnet publish src/Ekip.Server/Ekip.Server.csproj \
+dotnet publish src/Petek.Server/Petek.Server.csproj \
   -c Release \
-  -o /opt/ekip-server
+  -o /opt/Petek-server
 ```
 
 #### Uygulama Dizini Yapısı
 ```
-/opt/ekip-server/
+/opt/Petek-server/
 ├── appsettings.json          # Ana yapılandırma
 ├── appsettings.Production.json  # Production ayarları
-├── Ekip.Server.dll           # Ana uygulama
+├── Petek.Server.dll           # Ana uygulama
 ├── uploads/                  # Dosya yükleme dizini
 └── logs/                     # Log dosyaları
 ```
 
 ### 5. Yapılandırma
 
-`/opt/ekip-server/appsettings.Production.json` dosyasını oluşturun:
+`/opt/Petek-server/appsettings.Production.json` dosyasını oluşturun:
 
 ```json
 {
@@ -145,22 +145,22 @@ dotnet publish src/Ekip.Server/Ekip.Server.csproj \
   },
   "AllowedHosts": "*",
   "ConnectionStrings": {
-    "PostgreSQL": "Host=localhost;Port=5432;Database=ekip;Username=ekip_user;Password=GucluSifre123!",
+    "PostgreSQL": "Host=localhost;Port=5432;Database=Petek;Username=Petek_user;Password=GucluSifre123!",
     "Redis": "localhost:6379,password=GucluRedisParola123!"
   },
   "Cors": {
     "Origins": [
-      "https://ekip.sirketiniz.com"
+      "https://Petek.sirketiniz.com"
     ]
   },
   "FileStorage": {
-    "Path": "/opt/ekip-server/uploads",
+    "Path": "/opt/Petek-server/uploads",
     "MaxFileSizeBytes": 104857600
   },
   "Jwt": {
     "Secret": "minimum-32-karakter-uzunlugunda-guclu-bir-secret-key-kullanin",
-    "Issuer": "EkipMessenger",
-    "Audience": "EkipDesktop",
+    "Issuer": "PetekMessenger",
+    "Audience": "PetekDesktop",
     "ExpirationHours": 24
   },
   "Kestrel": {
@@ -171,7 +171,7 @@ dotnet publish src/Ekip.Server/Ekip.Server.csproj \
       "Https": {
         "Url": "https://0.0.0.0:5001",
         "Certificate": {
-          "Path": "/etc/ssl/certs/ekip.pfx",
+          "Path": "/etc/ssl/certs/Petek.pfx",
           "Password": "SertifikaSifresi"
         }
       }
@@ -183,35 +183,35 @@ dotnet publish src/Ekip.Server/Ekip.Server.csproj \
 ### 6. Dosya İzinleri
 ```bash
 # Uygulama kullanıcısı oluştur
-sudo useradd -r -s /bin/false ekip
+sudo useradd -r -s /bin/false Petek
 
 # Dizin sahipliğini ayarla
-sudo chown -R ekip:ekip /opt/ekip-server
-sudo chmod -R 750 /opt/ekip-server
+sudo chown -R Petek:Petek /opt/Petek-server
+sudo chmod -R 750 /opt/Petek-server
 
 # Upload dizini için yazma izni
-sudo chmod 770 /opt/ekip-server/uploads
+sudo chmod 770 /opt/Petek-server/uploads
 ```
 
 ### 7. Systemd Service Oluşturma (Linux)
 
-`/etc/systemd/system/ekip-server.service` dosyasını oluşturun:
+`/etc/systemd/system/Petek-server.service` dosyasını oluşturun:
 
 ```ini
 [Unit]
-Description=Ekip Messenger Server
+Description=Petek Messenger Server
 After=network.target postgresql.service redis.service
 
 [Service]
 Type=notify
-User=ekip
-Group=ekip
-WorkingDirectory=/opt/ekip-server
-ExecStart=/usr/bin/dotnet /opt/ekip-server/Ekip.Server.dll
+User=Petek
+Group=Petek
+WorkingDirectory=/opt/Petek-server
+ExecStart=/usr/bin/dotnet /opt/Petek-server/Petek.Server.dll
 Restart=always
 RestartSec=10
 KillSignal=SIGINT
-SyslogIdentifier=ekip-server
+SyslogIdentifier=Petek-server
 Environment=ASPNETCORE_ENVIRONMENT=Production
 Environment=DOTNET_PRINT_TELEMETRY_MESSAGE=false
 
@@ -220,7 +220,7 @@ NoNewPrivileges=true
 PrivateTmp=true
 ProtectSystem=strict
 ProtectHome=true
-ReadWritePaths=/opt/ekip-server/uploads /opt/ekip-server/logs
+ReadWritePaths=/opt/Petek-server/uploads /opt/Petek-server/logs
 
 [Install]
 WantedBy=multi-user.target
@@ -229,9 +229,9 @@ WantedBy=multi-user.target
 Servisi etkinleştirin:
 ```bash
 sudo systemctl daemon-reload
-sudo systemctl enable ekip-server
-sudo systemctl start ekip-server
-sudo systemctl status ekip-server
+sudo systemctl enable Petek-server
+sudo systemctl start Petek-server
+sudo systemctl status Petek-server
 ```
 
 ### 8. Windows Service Kurulumu (Windows Server)
@@ -240,41 +240,41 @@ sudo systemctl status ekip-server
 # NSSM ile Windows Service oluşturma
 # NSSM'i indir: https://nssm.cc/download
 
-nssm install EkipServer "C:\Program Files\dotnet\dotnet.exe" `
-    "C:\EkipServer\Ekip.Server.dll"
-nssm set EkipServer AppDirectory "C:\EkipServer"
-nssm set EkipServer AppEnvironmentExtra "ASPNETCORE_ENVIRONMENT=Production"
-nssm set EkipServer DisplayName "Ekip Messenger Server"
-nssm set EkipServer Start SERVICE_AUTO_START
+nssm install PetekServer "C:\Program Files\dotnet\dotnet.exe" `
+    "C:\PetekServer\Petek.Server.dll"
+nssm set PetekServer AppDirectory "C:\PetekServer"
+nssm set PetekServer AppEnvironmentExtra "ASPNETCORE_ENVIRONMENT=Production"
+nssm set PetekServer DisplayName "Petek Messenger Server"
+nssm set PetekServer Start SERVICE_AUTO_START
 
 # Servisi başlat
-nssm start EkipServer
+nssm start PetekServer
 ```
 
 ## Reverse Proxy Yapılandırması
 
 ### Nginx (Önerilen)
 
-`/etc/nginx/sites-available/ekip` dosyasını oluşturun:
+`/etc/nginx/sites-available/Petek` dosyasını oluşturun:
 
 ```nginx
-upstream ekip_server {
+upstream Petek_server {
     server 127.0.0.1:5000;
     keepalive 32;
 }
 
 server {
     listen 80;
-    server_name ekip.sirketiniz.com;
+    server_name Petek.sirketiniz.com;
     return 301 https://$server_name$request_uri;
 }
 
 server {
     listen 443 ssl http2;
-    server_name ekip.sirketiniz.com;
+    server_name Petek.sirketiniz.com;
 
-    ssl_certificate /etc/ssl/certs/ekip.crt;
-    ssl_certificate_key /etc/ssl/private/ekip.key;
+    ssl_certificate /etc/ssl/certs/Petek.crt;
+    ssl_certificate_key /etc/ssl/private/Petek.key;
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256;
     ssl_prefer_server_ciphers off;
@@ -283,7 +283,7 @@ server {
     client_max_body_size 100M;
 
     location / {
-        proxy_pass http://ekip_server;
+        proxy_pass http://Petek_server;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
@@ -300,7 +300,7 @@ server {
 
     # SignalR hub endpoint'i
     location /hubs/ {
-        proxy_pass http://ekip_server;
+        proxy_pass http://Petek_server;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
@@ -316,7 +316,7 @@ server {
 
 Etkinleştirin:
 ```bash
-sudo ln -s /etc/nginx/sites-available/ekip /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/Petek /etc/nginx/sites-enabled/
 sudo nginx -t
 sudo systemctl reload nginx
 ```
@@ -337,15 +337,15 @@ sudo systemctl reload nginx
 ### SPN Kayıt
 ```powershell
 # Domain Controller'da çalıştırın
-setspn -S HTTP/ekip.sirketiniz.com DOMAIN\ekip-service
-setspn -S HTTP/ekip-server DOMAIN\ekip-service
+setspn -S HTTP/Petek.sirketiniz.com DOMAIN\Petek-service
+setspn -S HTTP/Petek-server DOMAIN\Petek-service
 ```
 
 ### Keytab Oluşturma (Linux için)
 ```bash
 # Domain Controller'da
-ktpass /out ekip.keytab /princ HTTP/ekip.sirketiniz.com@DOMAIN.COM \
-    /mapuser ekip-service /crypto ALL /pass * /ptype KRB5_NT_PRINCIPAL
+ktpass /out Petek.keytab /princ HTTP/Petek.sirketiniz.com@DOMAIN.COM \
+    /mapuser Petek-service /crypto ALL /pass * /ptype KRB5_NT_PRINCIPAL
 ```
 
 ## Güvenlik Önerileri
@@ -364,14 +364,14 @@ sudo ufw enable
 ```bash
 # Let's Encrypt ile ücretsiz sertifika
 sudo apt-get install certbot python3-certbot-nginx
-sudo certbot --nginx -d ekip.sirketiniz.com
+sudo certbot --nginx -d Petek.sirketiniz.com
 ```
 
 ### Veritabanı Güvenliği
 ```sql
 -- Sadece gerekli IP'lerden erişime izin ver
 -- pg_hba.conf dosyasını düzenleyin
-host    ekip    ekip_user    10.0.0.0/24    scram-sha-256
+host    Petek    Petek_user    10.0.0.0/24    scram-sha-256
 ```
 
 ## Yedekleme
@@ -379,16 +379,16 @@ host    ekip    ekip_user    10.0.0.0/24    scram-sha-256
 ### Veritabanı Yedeği
 ```bash
 #!/bin/bash
-# /opt/ekip-backup/backup.sh
+# /opt/Petek-backup/backup.sh
 
-BACKUP_DIR="/opt/ekip-backup"
+BACKUP_DIR="/opt/Petek-backup"
 DATE=$(date +%Y%m%d_%H%M%S)
 
 # PostgreSQL yedeği
-pg_dump -U ekip_user -h localhost ekip | gzip > "$BACKUP_DIR/ekip_db_$DATE.sql.gz"
+pg_dump -U Petek_user -h localhost Petek | gzip > "$BACKUP_DIR/Petek_db_$DATE.sql.gz"
 
 # Upload dosyaları yedeği
-tar -czf "$BACKUP_DIR/ekip_uploads_$DATE.tar.gz" /opt/ekip-server/uploads
+tar -czf "$BACKUP_DIR/Petek_uploads_$DATE.tar.gz" /opt/Petek-server/uploads
 
 # 7 günden eski yedekleri sil
 find "$BACKUP_DIR" -name "*.gz" -mtime +7 -delete
@@ -397,14 +397,14 @@ find "$BACKUP_DIR" -name "*.gz" -mtime +7 -delete
 Cron ile zamanlayın:
 ```bash
 # Her gün gece 02:00'de yedek al
-0 2 * * * /opt/ekip-backup/backup.sh
+0 2 * * * /opt/Petek-backup/backup.sh
 ```
 
 ## İzleme ve Loglama
 
 ### Log Konumları
-- Uygulama logları: `/opt/ekip-server/logs/`
-- Systemd logları: `journalctl -u ekip-server -f`
+- Uygulama logları: `/opt/Petek-server/logs/`
+- Systemd logları: `journalctl -u Petek-server -f`
 - Nginx erişim logları: `/var/log/nginx/access.log`
 
 ### Health Check Endpoint
@@ -427,10 +427,10 @@ curl -k https://localhost:5001/health
 ### Log Analizi
 ```bash
 # Son hataları görüntüle
-journalctl -u ekip-server --since "1 hour ago" | grep -i error
+journalctl -u Petek-server --since "1 hour ago" | grep -i error
 
 # Gerçek zamanlı log takibi
-journalctl -u ekip-server -f
+journalctl -u Petek-server -f
 ```
 
 ## Production Checklist

@@ -1,0 +1,133 @@
+<Window x:Class="Petek.Desktop.Views.ProfileWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Profil"
+        Width="400" Height="580"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        Background="{DynamicResource BackgroundBrush}">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="24">
+            <!-- Avatar -->
+            <Grid HorizontalAlignment="Center" Margin="0,0,0,20">
+                <Ellipse Width="90" Height="90"
+                         Fill="{DynamicResource AccentBrushLight2}"/>
+                <TextBlock x:Name="AvatarInitials"
+                           Text="KU"
+                           FontSize="32"
+                           FontWeight="SemiBold"
+                           Foreground="{DynamicResource AccentBrushDark1}"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"/>
+                <Ellipse Style="{StaticResource StatusIndicator}"
+                         Fill="{DynamicResource StatusAvailableBrush}"
+                         Width="18" Height="18"
+                         HorizontalAlignment="Right"
+                         VerticalAlignment="Bottom"
+                         Margin="0,0,5,5"/>
+            </Grid>
+
+            <!-- User Info -->
+            <TextBlock x:Name="UserName"
+                       Text="Kullanıcı Adı"
+                       FontSize="22"
+                       FontWeight="SemiBold"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       HorizontalAlignment="Center"/>
+            <TextBlock x:Name="UserTitle"
+                       Text=""
+                       FontSize="13"
+                       Foreground="{DynamicResource TextSecondaryBrush}"
+                       HorizontalAlignment="Center"
+                       Margin="0,4,0,0"/>
+            <TextBlock x:Name="UserDepartment"
+                       Text=""
+                       FontSize="12"
+                       Foreground="{DynamicResource TextTertiaryBrush}"
+                       HorizontalAlignment="Center"
+                       Margin="0,4,0,20"/>
+
+            <!-- Status Selection -->
+            <Border Background="{DynamicResource CardBackgroundBrush}"
+                    CornerRadius="{StaticResource MediumCornerRadius}"
+                    Padding="16"
+                    Margin="0,0,0,12">
+                <StackPanel>
+                    <TextBlock Text="Durum"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextPrimaryBrush}"
+                               Margin="0,0,0,10"/>
+
+                    <RadioButton x:Name="StatusAvailable"
+                                 GroupName="Status"
+                                 IsChecked="True"
+                                 Margin="0,3">
+                        <StackPanel Orientation="Horizontal">
+                            <Ellipse Width="12" Height="12"
+                                     Fill="{DynamicResource StatusAvailableBrush}"
+                                     Margin="0,0,8,0"/>
+                            <TextBlock Text="Uygun"/>
+                        </StackPanel>
+                    </RadioButton>
+
+                    <RadioButton x:Name="StatusBusy"
+                                 GroupName="Status"
+                                 Margin="0,3">
+                        <StackPanel Orientation="Horizontal">
+                            <Ellipse Width="12" Height="12"
+                                     Fill="{DynamicResource StatusBusyBrush}"
+                                     Margin="0,0,8,0"/>
+                            <TextBlock Text="Meşgul"/>
+                        </StackPanel>
+                    </RadioButton>
+
+                    <RadioButton x:Name="StatusAway"
+                                 GroupName="Status"
+                                 Margin="0,3">
+                        <StackPanel Orientation="Horizontal">
+                            <Ellipse Width="12" Height="12"
+                                     Fill="{DynamicResource StatusAwayBrush}"
+                                     Margin="0,0,8,0"/>
+                            <TextBlock Text="Dışarıda"/>
+                        </StackPanel>
+                    </RadioButton>
+
+                    <RadioButton x:Name="StatusOffline"
+                                 GroupName="Status"
+                                 Margin="0,3">
+                        <StackPanel Orientation="Horizontal">
+                            <Ellipse Width="12" Height="12"
+                                     Fill="{DynamicResource StatusOfflineBrush}"
+                                     Margin="0,0,8,0"/>
+                            <TextBlock Text="Görünmez"/>
+                        </StackPanel>
+                    </RadioButton>
+                </StackPanel>
+            </Border>
+
+            <!-- Status Message -->
+            <Border Background="{DynamicResource CardBackgroundBrush}"
+                    CornerRadius="{StaticResource MediumCornerRadius}"
+                    Padding="16"
+                    Margin="0,0,0,20">
+                <StackPanel>
+                    <TextBlock Text="Durum Mesajı"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextPrimaryBrush}"
+                               Margin="0,0,0,8"/>
+                    <TextBox Style="{StaticResource FluentTextBox}"
+                             x:Name="StatusMessage"
+                             Text=""/>
+                </StackPanel>
+            </Border>
+
+            <!-- Logout Button -->
+            <Button Content="Çıkış Yap"
+                    Style="{StaticResource FluentButton}"
+                    HorizontalAlignment="Stretch"
+                    Click="Logout_Click"
+                    Margin="0,0,0,8"/>
+        </StackPanel>
+    </ScrollViewer>
+</Window>

@@ -1,0 +1,75 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Windows 11 Fluent Design System Colors -->
+
+    <!-- Accent Colors - Petek (Honeycomb Amber) -->
+    <Color x:Key="AccentColor">#F59E0B</Color>
+    <Color x:Key="AccentColorLight1">#FBBF24</Color>
+    <Color x:Key="AccentColorLight2">#FDE68A</Color>
+    <Color x:Key="AccentColorDark1">#D97706</Color>
+    <Color x:Key="AccentColorDark2">#B45309</Color>
+
+    <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource AccentColor}"/>
+    <SolidColorBrush x:Key="AccentBrushLight1" Color="{StaticResource AccentColorLight1}"/>
+    <SolidColorBrush x:Key="AccentBrushLight2" Color="{StaticResource AccentColorLight2}"/>
+    <SolidColorBrush x:Key="AccentBrushDark1" Color="{StaticResource AccentColorDark1}"/>
+    <SolidColorBrush x:Key="AccentBrushDark2" Color="{StaticResource AccentColorDark2}"/>
+
+    <!-- Light Theme Colors -->
+    <Color x:Key="LightBackground">#F3F3F3</Color>
+    <Color x:Key="LightSurface">#FFFFFF</Color>
+    <Color x:Key="LightSurfaceVariant">#F9F9F9</Color>
+    <Color x:Key="LightCardBackground">#FFFFFF</Color>
+    <Color x:Key="LightTextPrimary">#1A1A1A</Color>
+    <Color x:Key="LightTextSecondary">#5C5C5C</Color>
+    <Color x:Key="LightTextTertiary">#8A8A8A</Color>
+    <Color x:Key="LightBorder">#E0E0E0</Color>
+    <Color x:Key="LightDivider">#EBEBEB</Color>
+    <Color x:Key="LightSidebarBackground">#F5F5F5</Color>
+
+    <!-- Dark Theme Colors -->
+    <Color x:Key="DarkBackground">#202020</Color>
+    <Color x:Key="DarkSurface">#2D2D2D</Color>
+    <Color x:Key="DarkSurfaceVariant">#383838</Color>
+    <Color x:Key="DarkCardBackground">#2D2D2D</Color>
+    <Color x:Key="DarkTextPrimary">#FFFFFF</Color>
+    <Color x:Key="DarkTextSecondary">#B3B3B3</Color>
+    <Color x:Key="DarkTextTertiary">#767676</Color>
+    <Color x:Key="DarkBorder">#404040</Color>
+    <Color x:Key="DarkDivider">#3D3D3D</Color>
+    <Color x:Key="DarkSidebarBackground">#1F1F1F</Color>
+
+    <!-- Mica/Acrylic Effect Colors -->
+    <Color x:Key="AcrylicBackgroundLight">#B3FFFFFF</Color>
+    <Color x:Key="AcrylicBackgroundDark">#B3202020</Color>
+
+    <!-- Status Colors -->
+    <Color x:Key="StatusAvailable">#6CCB5F</Color>
+    <Color x:Key="StatusBusy">#C42B1C</Color>
+    <Color x:Key="StatusAway">#F7B93E</Color>
+    <Color x:Key="StatusOffline">#8A8A8A</Color>
+
+    <SolidColorBrush x:Key="StatusAvailableBrush" Color="{StaticResource StatusAvailable}"/>
+    <SolidColorBrush x:Key="StatusBusyBrush" Color="{StaticResource StatusBusy}"/>
+    <SolidColorBrush x:Key="StatusAwayBrush" Color="{StaticResource StatusAway}"/>
+    <SolidColorBrush x:Key="StatusOfflineBrush" Color="{StaticResource StatusOffline}"/>
+
+    <!-- Message Status Colors -->
+    <Color x:Key="MessageSent">#8A8A8A</Color>
+    <Color x:Key="MessageDelivered">#F59E0B</Color>
+    <Color x:Key="MessageRead">#F59E0B</Color>
+
+    <!-- Default Theme Brushes (Light) -->
+    <SolidColorBrush x:Key="BackgroundBrush" Color="{StaticResource LightBackground}"/>
+    <SolidColorBrush x:Key="SurfaceBrush" Color="{StaticResource LightSurface}"/>
+    <SolidColorBrush x:Key="SurfaceVariantBrush" Color="{StaticResource LightSurfaceVariant}"/>
+    <SolidColorBrush x:Key="CardBackgroundBrush" Color="{StaticResource LightCardBackground}"/>
+    <SolidColorBrush x:Key="TextPrimaryBrush" Color="{StaticResource LightTextPrimary}"/>
+    <SolidColorBrush x:Key="TextSecondaryBrush" Color="{StaticResource LightTextSecondary}"/>
+    <SolidColorBrush x:Key="TextTertiaryBrush" Color="{StaticResource LightTextTertiary}"/>
+    <SolidColorBrush x:Key="BorderBrush" Color="{StaticResource LightBorder}"/>
+    <SolidColorBrush x:Key="DividerBrush" Color="{StaticResource LightDivider}"/>
+    <SolidColorBrush x:Key="SidebarBackgroundBrush" Color="{StaticResource LightSidebarBackground}"/>
+
+</ResourceDictionary>

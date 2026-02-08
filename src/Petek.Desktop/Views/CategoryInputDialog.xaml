@@ -1,0 +1,45 @@
+<Window x:Class="Petek.Desktop.Views.CategoryInputDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Yeni Kategori"
+        Width="350" Height="180"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        Background="{DynamicResource BackgroundBrush}">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0"
+                   Text="Kategori Adı"
+                   FontWeight="SemiBold"
+                   Foreground="{DynamicResource TextPrimaryBrush}"
+                   Margin="0,0,0,8"/>
+
+        <TextBox x:Name="CategoryNameBox"
+                 Grid.Row="1"
+                 Style="{StaticResource FluentTextBox}"
+                 Tag="Kategori adını girin..."
+                 KeyDown="CategoryNameBox_KeyDown"/>
+
+        <StackPanel Grid.Row="3"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Margin="0,16,0,0">
+            <Button Content="İptal"
+                    Style="{StaticResource FluentButton}"
+                    Width="80"
+                    Margin="0,0,8,0"
+                    Click="Cancel_Click"/>
+            <Button Content="Ekle"
+                    Style="{StaticResource AccentButton}"
+                    Width="80"
+                    Click="Ok_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>

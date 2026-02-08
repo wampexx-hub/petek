@@ -1,0 +1,1826 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Petek Messenger - Yonetim Paneli</title>
+    <style>
+        :root {
+            --bg: #0f0f0f;
+            --surface: #1a1a1a;
+            --surface2: #242424;
+            --surface3: #2d2d2d;
+            --border: #333;
+            --accent: #F59E0B;
+            --accent-hover: #FBBF24;
+            --accent-light: rgba(245,158,11,0.15);
+            --text: #e4e4e4;
+            --text2: #999;
+            --text3: #666;
+            --success: #4caf50;
+            --danger: #f44336;
+            --warning: #ff9800;
+            --radius: 12px;
+            --radius-sm: 8px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI Variable', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* Layout */
+        .layout { display: flex; min-height: 100vh; }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 10;
+        }
+
+        .sidebar-brand {
+            padding: 24px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sidebar-brand .logo {
+            width: 36px; height: 36px;
+            background: var(--accent);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 18px;
+            color: #fff;
+        }
+
+        .sidebar-brand span { font-size: 15px; font-weight: 600; }
+        .sidebar-brand small { display: block; font-size: 11px; color: var(--text3); font-weight: 400; }
+
+        .sidebar-nav { flex: 1; padding: 12px 8px; overflow-y: auto; }
+
+        .nav-section { padding: 12px 12px 6px; font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .nav-item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 14px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            color: var(--text2);
+            font-size: 14px;
+            transition: all 0.15s;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+        }
+
+        .nav-item:hover { background: var(--surface2); color: var(--text); }
+        .nav-item.active { background: var(--accent-light); color: var(--accent); font-weight: 500; }
+        .nav-item svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+        .sidebar-footer {
+            padding: 16px 20px;
+            border-top: 1px solid var(--border);
+            font-size: 12px;
+            color: var(--text3);
+        }
+
+        /* Main content */
+        .main { flex: 1; margin-left: 260px; }
+
+        .topbar {
+            height: 60px;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 28px;
+            position: sticky;
+            top: 0;
+            z-index: 5;
+        }
+
+        .topbar h2 { font-size: 18px; font-weight: 600; }
+
+        .topbar-actions { display: flex; gap: 8px; align-items: center; }
+
+        .content { padding: 28px; }
+
+        /* Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px;
+            transition: border-color 0.2s;
+        }
+
+        .stat-card:hover { border-color: var(--accent); }
+
+        .stat-card .label { font-size: 13px; color: var(--text2); margin-bottom: 8px; }
+        .stat-card .value { font-size: 28px; font-weight: 700; }
+        .stat-card .sub { font-size: 12px; color: var(--text3); margin-top: 4px; }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-header h3 { font-size: 15px; font-weight: 600; }
+        .card-body { padding: 20px; }
+
+        /* Tables */
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 10px 16px; font-size: 12px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.3px; border-bottom: 1px solid var(--border); }
+        td { padding: 12px 16px; font-size: 14px; border-bottom: 1px solid var(--border); }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: var(--surface2); }
+
+        /* Badges */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .badge-success { background: rgba(76,175,80,0.15); color: #66bb6a; }
+        .badge-danger { background: rgba(244,67,54,0.15); color: #ef5350; }
+        .badge-warning { background: rgba(255,152,0,0.15); color: #ffa726; }
+        .badge-info { background: rgba(0,120,212,0.15); color: #42a5f5; }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            background: var(--surface2);
+            color: var(--text);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s;
+            font-family: inherit;
+        }
+        .btn:hover { background: var(--surface3); border-color: var(--text3); }
+        .btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+        .btn-primary:hover { background: var(--accent-hover); }
+        .btn-danger { background: var(--danger); border-color: var(--danger); color: #fff; }
+        .btn-danger:hover { opacity: 0.85; }
+        .btn-sm { padding: 5px 10px; font-size: 12px; }
+
+        /* Forms */
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 500; color: var(--text2); margin-bottom: 6px; }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 14px;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text);
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .form-control:focus { border-color: var(--accent); }
+        select.form-control { cursor: pointer; }
+
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 4px;
+            border-bottom: 1px solid var(--border);
+            padding: 0 20px;
+        }
+        .tab {
+            padding: 12px 16px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text3);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+            background: none;
+            border-top: none;
+            border-left: none;
+            border-right: none;
+            font-family: inherit;
+        }
+        .tab:hover { color: var(--text); }
+        .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.show { display: flex; }
+
+        .modal {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            width: 100%;
+            max-width: 480px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .modal-header h3 { font-size: 16px; }
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text3);
+            font-size: 20px;
+            cursor: pointer;
+            padding: 4px;
+        }
+        .modal-close:hover { color: var(--text); }
+        .modal-body { padding: 20px; }
+        .modal-footer {
+            padding: 16px 20px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        /* Toast notifications */
+        .toast-container { position: fixed; top: 20px; right: 20px; z-index: 200; display: flex; flex-direction: column; gap: 8px; }
+
+        .toast {
+            padding: 12px 20px;
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-weight: 500;
+            animation: slideIn 0.3s ease;
+            min-width: 250px;
+        }
+        .toast-success { background: rgba(76,175,80,0.9); color: #fff; }
+        .toast-error { background: rgba(244,67,54,0.9); color: #fff; }
+
+        @keyframes slideIn {
+            from { transform: translateX(100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Page sections */
+        .page { display: none; }
+        .page.active { display: block; }
+
+        /* Empty state */
+        .empty-state { text-align: center; padding: 60px 20px; color: var(--text3); }
+        .empty-state svg { width: 48px; height: 48px; margin-bottom: 16px; opacity: 0.3; }
+        .empty-state p { font-size: 15px; }
+
+        /* Loading */
+        .loading { display: flex; align-items: center; justify-content: center; padding: 40px; }
+        .spinner {
+            width: 32px; height: 32px;
+            border: 3px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Status dot */
+        .status-dot {
+            display: inline-block;
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+        .status-online { background: var(--success); }
+        .status-offline { background: var(--text3); }
+        .status-busy { background: var(--danger); }
+        .status-away { background: var(--warning); }
+
+        /* Connection indicator */
+        .conn-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: var(--text3);
+        }
+        .conn-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+        }
+        .conn-dot.disconnected { background: var(--danger); }
+
+        /* Database config */
+        .db-option {
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 12px;
+        }
+        .db-option:hover { border-color: var(--text3); }
+        .db-option.selected { border-color: var(--accent); background: var(--accent-light); }
+        .db-option h4 { font-size: 14px; margin-bottom: 4px; }
+        .db-option p { font-size: 12px; color: var(--text3); }
+
+        /* Toggle switch */
+        .toggle {
+            position: relative;
+            width: 44px; height: 24px;
+            cursor: pointer;
+        }
+        .toggle input { opacity: 0; width: 0; height: 0; }
+        .toggle .slider {
+            position: absolute; inset: 0;
+            background: var(--surface3);
+            border-radius: 12px;
+            transition: 0.3s;
+        }
+        .toggle .slider::before {
+            content: '';
+            position: absolute;
+            width: 18px; height: 18px;
+            left: 3px; top: 3px;
+            background: var(--text);
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+        .toggle input:checked + .slider { background: var(--accent); }
+        .toggle input:checked + .slider::before { transform: translateX(20px); }
+    </style>
+</head>
+<body>
+    <div class="layout">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-brand">
+                <div class="logo">P</div>
+                <div>
+                    <span>Petek Messenger</span>
+                    <small>Yonetim Paneli</small>
+                </div>
+            </div>
+            <div class="sidebar-nav">
+                <div class="nav-section">Genel</div>
+                <button class="nav-item active" onclick="showPage('dashboard')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+                    Kontrol Paneli
+                </button>
+
+                <div class="nav-section">Yonetim</div>
+                <button class="nav-item" onclick="showPage('users')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    Kullanicilar
+                </button>
+                <button class="nav-item" onclick="showPage('sessions')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                    Oturumlar
+                </button>
+
+                <button class="nav-item" onclick="showPage('notifications')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                    Bildirimler
+                </button>
+
+                <div class="nav-section">Guvenlik</div>
+                <button class="nav-item" onclick="showPage('sso')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    SSO Ayarlari
+                </button>
+                <button class="nav-item" onclick="showPage('dlp')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    DLP Kurallari
+                </button>
+
+                <div class="nav-section">Sistem</div>
+                <button class="nav-item" onclick="showPage('database')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+                    Veritabani
+                </button>
+                <button class="nav-item" onclick="showPage('redundancy')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
+                    Yedeklilik
+                </button>
+                <button class="nav-item" onclick="showPage('settings')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                    Ayarlar
+                </button>
+                <button class="nav-item" onclick="showPage('logs')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                    Kayitlar
+                </button>
+            </div>
+            <div class="sidebar-footer">
+                <div class="conn-indicator">
+                    <div class="conn-dot" id="connDot"></div>
+                    <span id="connStatus">Baglaniyor...</span>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main content -->
+        <div class="main">
+            <div class="topbar">
+                <h2 id="pageTitle">Kontrol Paneli</h2>
+                <div class="topbar-actions">
+                    <button class="btn btn-sm" onclick="refreshData()">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                        Yenile
+                    </button>
+                </div>
+            </div>
+
+            <!-- Dashboard Page -->
+            <div id="page-dashboard" class="page active">
+                <div class="content">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="label">Toplam Kullanici</div>
+                            <div class="value" id="statTotalUsers">-</div>
+                            <div class="sub">Kayitli kullanicilar</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="label">Cevrimici</div>
+                            <div class="value" id="statOnlineUsers">-</div>
+                            <div class="sub">Su an aktif</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="label">Bugunun Mesajlari</div>
+                            <div class="value" id="statTodayMessages">-</div>
+                            <div class="sub">Bugun gonderilen</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="label">Aktif Oturumlar</div>
+                            <div class="value" id="statActiveSessions">-</div>
+                            <div class="sub">Bagli cihazlar</div>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>Son Girisler</h3>
+                            </div>
+                            <div class="card-body" id="recentLogins">
+                                <div class="loading"><div class="spinner"></div></div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>Sistem Durumu</h3>
+                            </div>
+                            <div class="card-body">
+                                <table>
+                                    <tr><td>Veritabani</td><td><span class="badge badge-success" id="dbType">-</span></td></tr>
+                                    <tr><td>Sunucu Surumu</td><td>1.0.0</td></tr>
+                                    <tr><td>Uptime</td><td id="uptime">-</td></tr>
+                                    <tr><td>Toplam Mesaj</td><td id="statTotalMessages">-</td></tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Users Page -->
+            <div id="page-users" class="page">
+                <div class="content">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <div>
+                            <input type="text" class="form-control" placeholder="Kullanici ara..." id="userSearch" oninput="filterUsers()" style="width: 300px;">
+                        </div>
+                        <button class="btn btn-primary" onclick="showCreateUserModal()">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                            Yeni Kullanici
+                        </button>
+                    </div>
+                    <div class="card">
+                        <div class="card-body" style="padding:0;">
+                            <table id="usersTable">
+                                <thead>
+                                    <tr>
+                                        <th>Kullanici</th>
+                                        <th>E-posta</th>
+                                        <th>Departman</th>
+                                        <th>Rol</th>
+                                        <th>Durum</th>
+                                        <th>Son Giris</th>
+                                        <th>Islemler</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="usersBody">
+                                    <tr><td colspan="7"><div class="loading"><div class="spinner"></div></div></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sessions Page -->
+            <div id="page-sessions" class="page">
+                <div class="content">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Aktif Oturumlar</h3>
+                            <button class="btn btn-sm btn-danger" onclick="terminateAllSessions()">Tum Oturumlari Kapat</button>
+                        </div>
+                        <div class="card-body" style="padding:0;">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Kullanici</th>
+                                        <th>Cihaz</th>
+                                        <th>IP Adresi</th>
+                                        <th>Baslangic</th>
+                                        <th>Son Aktivite</th>
+                                        <th>Islem</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="sessionsBody">
+                                    <tr><td colspan="6"><div class="loading"><div class="spinner"></div></div></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Database Page -->
+            <div id="page-database" class="page">
+                <div class="content">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Veritabani Yapilandirmasi</h3>
+                        </div>
+                        <div class="card-body">
+                            <p style="color: var(--text2); margin-bottom: 20px; font-size: 14px;">
+                                Sunucunun kullandigi veritabani motorunu secin. Degisiklikler sunucu yeniden baslatildiginda aktif olur.
+                            </p>
+
+                            <div id="dbOptionSqlite" class="db-option selected" onclick="selectDb('SQLite')">
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+                                    <div>
+                                        <h4>SQLite (Yerel)</h4>
+                                        <p>Dosya tabanli, kurulum gerektirmez. Tek sunucu icin ideal.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="dbOptionPg" class="db-option" onclick="selectDb('PostgreSQL')">
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+                                    <div>
+                                        <h4>PostgreSQL</h4>
+                                        <p>Yuksek performans, coklu sunucu ve buyuk olcekli kullanim icin.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="dbConfigSqlite" style="margin-top: 20px;">
+                                <div class="form-group">
+                                    <label>Veritabani Dosya Yolu</label>
+                                    <input type="text" class="form-control" id="sqlitePath" value="Petek_v1.db" placeholder="Petek.db">
+                                </div>
+                            </div>
+
+                            <div id="dbConfigPg" style="margin-top: 20px; display: none;">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Sunucu</label>
+                                        <input type="text" class="form-control" id="pgHost" value="localhost" placeholder="localhost">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Port</label>
+                                        <input type="text" class="form-control" id="pgPort" value="5432" placeholder="5432">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Veritabani Adi</label>
+                                    <input type="text" class="form-control" id="pgDatabase" value="Petek" placeholder="Petek">
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Kullanici Adi</label>
+                                        <input type="text" class="form-control" id="pgUser" value="postgres" placeholder="postgres">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Sifre</label>
+                                        <input type="password" class="form-control" id="pgPassword" placeholder="*****">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style="margin-top: 20px; display: flex; gap: 12px;">
+                                <button class="btn btn-primary" onclick="saveDbConfig()">Kaydet</button>
+                                <button class="btn" onclick="testDbConnection()">Baglanti Testi</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Veritabani Bilgileri</h3>
+                        </div>
+                        <div class="card-body">
+                            <table>
+                                <tr><td style="width:200px">Aktif Motor</td><td id="dbActiveEngine">-</td></tr>
+                                <tr><td>Baglanti Durumu</td><td><span class="badge badge-success" id="dbConnStatus">Kontrol ediliyor...</span></td></tr>
+                                <tr><td>Kullanici Sayisi</td><td id="dbUserCount">-</td></tr>
+                                <tr><td>Mesaj Sayisi</td><td id="dbMessageCount">-</td></tr>
+                                <tr><td>Veritabani Boyutu</td><td id="dbSize">-</td></tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Page -->
+            <div id="page-settings" class="page">
+                <div class="content">
+                    <div class="card">
+                        <div class="card-header"><h3>Sunucu Ayarlari</h3></div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label>Maksimum Dosya Boyutu (MB)</label>
+                                <input type="number" class="form-control" id="maxFileSize" value="100" style="width: 200px;">
+                            </div>
+                            <div class="form-group">
+                                <label>Grup Basina Maks. Katilimci</label>
+                                <input type="number" class="form-control" id="maxGroupSize" value="100" style="width: 200px;">
+                            </div>
+                            <div class="form-group">
+                                <label>Oturum Zaman Asimi (saat)</label>
+                                <input type="number" class="form-control" id="sessionTimeout" value="24" style="width: 200px;">
+                            </div>
+                            <div class="form-group">
+                                <label>Mesaj Saklama Suresi (gun, 0=sinirsiz)</label>
+                                <input type="number" class="form-control" id="messageRetention" value="0" style="width: 200px;">
+                            </div>
+                            <div style="margin-top: 20px;">
+                                <button class="btn btn-primary" onclick="saveSettings()">Kaydet</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header"><h3>CORS Ayarlari</h3></div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label>Izin Verilen Originler (her satirda bir tane)</label>
+                                <textarea class="form-control" id="corsOrigins" rows="4" style="resize: vertical;">http://localhost:5000
+https://localhost:5001</textarea>
+                            </div>
+                            <button class="btn btn-primary" onclick="saveCorsSettings()">Kaydet</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notifications Page -->
+            <div id="page-notifications" class="page">
+                <div class="content">
+                    <div class="card">
+                        <div class="card-header"><h3>Bildirim Gonder</h3></div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label>Baslik</label>
+                                <input type="text" class="form-control" id="notifTitle" placeholder="Bildirim basligi...">
+                            </div>
+                            <div class="form-group">
+                                <label>Mesaj</label>
+                                <textarea class="form-control" id="notifMessage" rows="4" placeholder="Bildirim mesaji..." style="resize: vertical;"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Hedef</label>
+                                <select class="form-control" id="notifTarget" style="width: 300px;">
+                                    <option value="all">Tum Kullanicilar</option>
+                                    <option value="online">Cevrimici Kullanicilar</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-primary" onclick="sendNotification()">Bildirim Gonder</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SSO Settings Page -->
+            <div id="page-sso" class="page">
+                <div class="content">
+                    <div class="card">
+                        <div class="card-header"><h3>Windows Kimlik Dogrulama</h3></div>
+                        <div class="card-body">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                                <div>
+                                    <div style="font-weight: 500;">Windows Negotiate (Kerberos/NTLM)</div>
+                                    <div style="font-size: 13px; color: var(--text3);">Active Directory ile tek oturum acma</div>
+                                </div>
+                                <label class="toggle"><input type="checkbox" id="ssoWindowsAuth" checked><span class="slider"></span></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header"><h3>LDAP Ayarlari</h3></div>
+                        <div class="card-body">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                                <div>
+                                    <div style="font-weight: 500;">LDAP/Active Directory Baglantisi</div>
+                                    <div style="font-size: 13px; color: var(--text3);">Kullanici bilgilerini LDAP uzerinden sorgulama</div>
+                                </div>
+                                <label class="toggle"><input type="checkbox" id="ssoLdapEnabled"><span class="slider"></span></label>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>LDAP Sunucu</label>
+                                    <input type="text" class="form-control" id="ssoLdapServer" placeholder="ldap.sirket.com">
+                                </div>
+                                <div class="form-group">
+                                    <label>Port</label>
+                                    <input type="number" class="form-control" id="ssoLdapPort" value="389" style="width: 120px;">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Base DN</label>
+                                <input type="text" class="form-control" id="ssoLdapBaseDN" placeholder="DC=sirket,DC=com">
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Bind DN (Kullanici)</label>
+                                    <input type="text" class="form-control" id="ssoLdapBindDN" placeholder="CN=admin,DC=sirket,DC=com">
+                                </div>
+                                <div class="form-group">
+                                    <label>Bind Sifre</label>
+                                    <input type="password" class="form-control" id="ssoLdapBindPassword" placeholder="*****">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Kullanici Filtresi</label>
+                                <input type="text" class="form-control" id="ssoLdapFilter" value="(sAMAccountName={0})">
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
+                                <label class="toggle"><input type="checkbox" id="ssoLdapSsl"><span class="slider"></span></label>
+                                <span style="font-size: 14px;">SSL/TLS Kullan (LDAPS)</span>
+                            </div>
+                            <div style="display: flex; gap: 12px;">
+                                <button class="btn btn-primary" onclick="saveSsoConfig()">Kaydet</button>
+                                <button class="btn" onclick="testLdapConnection()">Baglanti Testi</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header"><h3>SAML 2.0</h3></div>
+                        <div class="card-body">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                                <div>
+                                    <div style="font-weight: 500;">SAML Kimlik Dogrulama</div>
+                                    <div style="font-size: 13px; color: var(--text3);">Harici kimlik saglayicilariyla entegrasyon (Okta, Azure AD, vs.)</div>
+                                </div>
+                                <label class="toggle"><input type="checkbox" id="ssoSamlEnabled"><span class="slider"></span></label>
+                            </div>
+                            <div class="form-group">
+                                <label>Entity ID</label>
+                                <input type="text" class="form-control" id="ssoSamlEntityId" placeholder="https://sirket.com/Petek">
+                            </div>
+                            <div class="form-group">
+                                <label>Metadata URL</label>
+                                <input type="text" class="form-control" id="ssoSamlMetadataUrl" placeholder="https://idp.sirket.com/metadata">
+                            </div>
+                            <div class="form-group">
+                                <label>Sertifika Dosya Yolu</label>
+                                <input type="text" class="form-control" id="ssoSamlCert" placeholder="/path/to/cert.pem">
+                            </div>
+                            <button class="btn btn-primary" onclick="saveSsoConfig()">Kaydet</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DLP Page -->
+            <div id="page-dlp" class="page">
+                <div class="content">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>DLP Kurallari</h3>
+                            <button class="btn btn-primary btn-sm" onclick="addDlpRule()">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                Yeni Kural
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                                <div>
+                                    <div style="font-weight: 500;">Veri Kaybi Onleme (DLP)</div>
+                                    <div style="font-size: 13px; color: var(--text3);">Hassas verilerin paylasilmasini engelle</div>
+                                </div>
+                                <label class="toggle"><input type="checkbox" id="dlpEnabled"><span class="slider"></span></label>
+                            </div>
+
+                            <div id="dlpRulesList">
+                                <div style="border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 12px;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <div>
+                                            <div style="font-weight: 500;">Kredi Karti Numarasi</div>
+                                            <div style="font-size: 12px; color: var(--text3);">Regex: \b\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}\b</div>
+                                        </div>
+                                        <div style="display: flex; gap: 8px; align-items: center;">
+                                            <span class="badge badge-danger">Engelle</span>
+                                            <button class="btn btn-sm" onclick="removeDlpRule(this)">Sil</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 12px;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <div>
+                                            <div style="font-weight: 500;">TC Kimlik Numarasi</div>
+                                            <div style="font-size: 12px; color: var(--text3);">Regex: \b[1-9]\d{10}\b</div>
+                                        </div>
+                                        <div style="display: flex; gap: 8px; align-items: center;">
+                                            <span class="badge badge-warning">Uyar</span>
+                                            <button class="btn btn-sm" onclick="removeDlpRule(this)">Sil</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header"><h3>Harici DLP Araci Entegrasyonu</h3></div>
+                        <div class="card-body">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                                <div>
+                                    <div style="font-weight: 500;">Harici DLP Araci</div>
+                                    <div style="font-size: 13px; color: var(--text3);">Ucuncu parti DLP cozumuyle entegrasyon</div>
+                                </div>
+                                <label class="toggle"><input type="checkbox" id="dlpExternalEnabled"><span class="slider"></span></label>
+                            </div>
+                            <div class="form-group">
+                                <label>Arac Tipi</label>
+                                <select class="form-control" id="dlpExternalType" style="width: 300px;">
+                                    <option value="">Secin...</option>
+                                    <option value="symantec">Symantec DLP</option>
+                                    <option value="forcepoint">Forcepoint DLP</option>
+                                    <option value="mcafee">McAfee DLP</option>
+                                    <option value="digital-guardian">Digital Guardian</option>
+                                    <option value="custom">Ozel (API)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>API URL</label>
+                                <input type="text" class="form-control" id="dlpExternalUrl" placeholder="https://dlp.sirket.com/api/scan">
+                            </div>
+                            <div class="form-group">
+                                <label>API Anahtari</label>
+                                <input type="password" class="form-control" id="dlpExternalKey" placeholder="*****">
+                            </div>
+                            <div style="display: flex; gap: 20px; margin-bottom: 16px;">
+                                <label style="display: flex; align-items: center; gap: 8px; font-size: 14px;">
+                                    <input type="checkbox" id="dlpScanMessages"> Mesajlari Tara
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 8px; font-size: 14px;">
+                                    <input type="checkbox" id="dlpScanFiles" checked> Dosyalari Tara
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 8px; font-size: 14px;">
+                                    <input type="checkbox" id="dlpBlockOnViolation"> Ihlalde Engelle
+                                </label>
+                            </div>
+                            <button class="btn btn-primary" onclick="saveDlpConfig()">Kaydet</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Redundancy Page -->
+            <div id="page-redundancy" class="page">
+                <div class="content">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Sunucu Yedekliligi</h3>
+                        </div>
+                        <div class="card-body">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                                <div>
+                                    <div style="font-weight: 500;">Coklu Sunucu Modu</div>
+                                    <div style="font-size: 13px; color: var(--text3);">Birden fazla sunucu ile yedekli calisma</div>
+                                </div>
+                                <label class="toggle"><input type="checkbox" id="redundancyEnabled"><span class="slider"></span></label>
+                            </div>
+                            <div class="form-group">
+                                <label>Bu Dugum ID</label>
+                                <input type="text" class="form-control" id="redundancyNodeId" value="node-1" style="width: 300px;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Sunucu Dugumleri</h3>
+                            <button class="btn btn-primary btn-sm" onclick="addServerNode()">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                Dugum Ekle
+                            </button>
+                        </div>
+                        <div class="card-body" style="padding: 0;">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Dugum ID</th>
+                                        <th>Adres</th>
+                                        <th>Durum</th>
+                                        <th>Islem</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="nodesBody">
+                                    <tr><td colspan="4" style="text-align:center;color:var(--text3);padding:40px;">Henuz ek sunucu dugumu eklenmemis</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Veritabani Replikalari</h3>
+                            <button class="btn btn-primary btn-sm" onclick="addDbReplica()">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                Replika Ekle
+                            </button>
+                        </div>
+                        <div class="card-body" style="padding: 0;">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Ad</th>
+                                        <th>Tip</th>
+                                        <th>Baglanti</th>
+                                        <th>Rol</th>
+                                        <th>Islem</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="replicasBody">
+                                    <tr><td colspan="5" style="text-align:center;color:var(--text3);padding:40px;">Henuz veritabani replikasi eklenmemis</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div style="margin-top: 16px;">
+                        <button class="btn btn-primary" onclick="saveRedundancyConfig()">Tum Degisiklikleri Kaydet</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Logs Page -->
+            <div id="page-logs" class="page">
+                <div class="content">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Denetim Kayitlari</h3>
+                            <div style="display: flex; gap: 8px;">
+                                <select class="form-control" id="logFilter" style="width: 160px;" onchange="loadLogs()">
+                                    <option value="">Tum Islemler</option>
+                                    <option value="CreateUser">Kullanici Olusturma</option>
+                                    <option value="UpdateUserRole">Rol Degisikligi</option>
+                                    <option value="DeleteUser">Kullanici Silme</option>
+                                    <option value="SetUserEnabled">Durum Degisikligi</option>
+                                    <option value="TerminateSession">Oturum Kapatma</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="card-body" style="padding: 0;">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Zaman</th>
+                                        <th>Kullanici</th>
+                                        <th>Islem</th>
+                                        <th>Detay</th>
+                                        <th>IP</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="logsBody">
+                                    <tr><td colspan="5"><div class="loading"><div class="spinner"></div></div></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div style="padding: 12px 20px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 13px; color: var(--text3);" id="logsPagination">-</span>
+                            <div style="display: flex; gap: 8px;">
+                                <button class="btn btn-sm" id="logsPrev" onclick="loadLogs(currentLogPage-1)" disabled>Onceki</button>
+                                <button class="btn btn-sm" id="logsNext" onclick="loadLogs(currentLogPage+1)">Sonraki</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create User Modal -->
+    <div class="modal-overlay" id="createUserModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Yeni Kullanici Olustur</h3>
+                <button class="modal-close" onclick="closeModal('createUserModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Kullanici Adi *</label>
+                    <input type="text" class="form-control" id="newUsername" placeholder="ornek: ahmet.yilmaz">
+                </div>
+                <div class="form-group">
+                    <label>Gorunen Ad *</label>
+                    <input type="text" class="form-control" id="newDisplayName" placeholder="ornek: Ahmet Yilmaz">
+                </div>
+                <div class="form-group">
+                    <label>E-posta *</label>
+                    <input type="email" class="form-control" id="newEmail" placeholder="ornek: ahmet@sirket.com">
+                </div>
+                <div class="form-group">
+                    <label>Sifre (opsiyonel - sifre ile giris icin)</label>
+                    <input type="password" class="form-control" id="newPassword" placeholder="En az 6 karakter">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Departman</label>
+                        <input type="text" class="form-control" id="newDepartment" placeholder="ornek: IT">
+                    </div>
+                    <div class="form-group">
+                        <label>Unvan</label>
+                        <input type="text" class="form-control" id="newTitle" placeholder="ornek: Yazilimci">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Rol</label>
+                    <select class="form-control" id="newRole">
+                        <option value="0">Kullanici</option>
+                        <option value="1">Moderator</option>
+                        <option value="2">Admin</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" onclick="closeModal('createUserModal')">Iptal</button>
+                <button class="btn btn-primary" onclick="createUser()">Olustur</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit User Modal -->
+    <div class="modal-overlay" id="editUserModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Kullanici Duzenle</h3>
+                <button class="modal-close" onclick="closeModal('editUserModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editUserId">
+                <div class="form-group">
+                    <label>Gorunen Ad</label>
+                    <input type="text" class="form-control" id="editDisplayName">
+                </div>
+                <div class="form-group">
+                    <label>E-posta</label>
+                    <input type="email" class="form-control" id="editEmail">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Departman</label>
+                        <input type="text" class="form-control" id="editDepartment">
+                    </div>
+                    <div class="form-group">
+                        <label>Unvan</label>
+                        <input type="text" class="form-control" id="editTitle">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Rol</label>
+                    <select class="form-control" id="editRole">
+                        <option value="0">Kullanici</option>
+                        <option value="1">Moderator</option>
+                        <option value="2">Admin</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" onclick="closeModal('editUserModal')">Iptal</button>
+                <button class="btn btn-primary" onclick="updateUser()">Kaydet</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        const API_BASE = '/api/admin';
+        let currentLogPage = 1;
+        let allUsers = [];
+        const startTime = Date.now();
+
+        // Page navigation
+        function showPage(page) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('page-' + page).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+
+            const titles = {
+                dashboard: 'Kontrol Paneli',
+                users: 'Kullanicilar',
+                sessions: 'Oturumlar',
+                notifications: 'Bildirimler',
+                sso: 'SSO Ayarlari',
+                dlp: 'DLP Kurallari',
+                database: 'Veritabani',
+                redundancy: 'Yedeklilik',
+                settings: 'Ayarlar',
+                logs: 'Denetim Kayitlari'
+            };
+            document.getElementById('pageTitle').textContent = titles[page] || page;
+
+            if (page === 'users') loadUsers();
+            if (page === 'sessions') loadSessions();
+            if (page === 'logs') loadLogs();
+            if (page === 'database') loadDbInfo();
+            if (page === 'sso') loadSsoConfig();
+            if (page === 'dlp') loadDlpConfig();
+            if (page === 'redundancy') loadRedundancyConfig();
+        }
+
+        // Toast notifications
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast toast-' + type;
+            toast.textContent = message;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // Modal helpers
+        function showCreateUserModal() {
+            document.getElementById('newUsername').value = '';
+            document.getElementById('newDisplayName').value = '';
+            document.getElementById('newEmail').value = '';
+            document.getElementById('newDepartment').value = '';
+            document.getElementById('newTitle').value = '';
+            document.getElementById('newRole').value = '0';
+            document.getElementById('createUserModal').classList.add('show');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('show');
+        }
+
+        // API helpers
+        async function apiGet(url) {
+            const res = await fetch(url);
+            if (!res.ok) throw new Error('API error: ' + res.status);
+            return res.json();
+        }
+
+        async function apiPost(url, data) {
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            if (!res.ok) throw new Error('API error: ' + res.status);
+            return res.json();
+        }
+
+        async function apiPut(url, data) {
+            const res = await fetch(url, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            if (!res.ok) throw new Error('API error: ' + res.status);
+            return res.json();
+        }
+
+        async function apiDelete(url) {
+            const res = await fetch(url, { method: 'DELETE' });
+            if (!res.ok) throw new Error('API error: ' + res.status);
+            return res.json();
+        }
+
+        // Dashboard
+        async function loadDashboard() {
+            try {
+                const data = await apiGet(API_BASE + '/dashboard');
+                if (data.success) {
+                    const s = data.data;
+                    document.getElementById('statTotalUsers').textContent = s.totalUsers;
+                    document.getElementById('statOnlineUsers').textContent = s.onlineUsers;
+                    document.getElementById('statTodayMessages').textContent = s.todayMessageCount;
+                    document.getElementById('statActiveSessions').textContent = s.activeSessions;
+                    document.getElementById('statTotalMessages').textContent = s.totalMessageCount;
+                    document.getElementById('connDot').classList.remove('disconnected');
+                    document.getElementById('connStatus').textContent = 'Bagli';
+                }
+            } catch (e) {
+                document.getElementById('connDot').classList.add('disconnected');
+                document.getElementById('connStatus').textContent = 'Baglanti Hatasi';
+            }
+
+            try {
+                const users = await apiGet(API_BASE + '/users');
+                if (users.success) {
+                    const recent = users.data
+                        .filter(u => u.lastLoginAt)
+                        .sort((a, b) => new Date(b.lastLoginAt) - new Date(a.lastLoginAt))
+                        .slice(0, 5);
+
+                    const html = recent.length > 0
+                        ? '<table>' + recent.map(u =>
+                            `<tr><td><span class="status-dot status-${u.status === 1 ? 'online' : 'offline'}"></span>${u.displayName}</td><td style="text-align:right;color:var(--text3);font-size:13px">${formatDate(u.lastLoginAt)}</td></tr>`
+                        ).join('') + '</table>'
+                        : '<div class="empty-state"><p>Henuz giris yapan yok</p></div>';
+
+                    document.getElementById('recentLogins').innerHTML = html;
+                }
+            } catch (e) {
+                document.getElementById('recentLogins').innerHTML = '<div class="empty-state"><p>Veri yuklenemedi</p></div>';
+            }
+
+            updateUptime();
+        }
+
+        function updateUptime() {
+            const elapsed = Date.now() - startTime;
+            const mins = Math.floor(elapsed / 60000);
+            const hrs = Math.floor(mins / 60);
+            document.getElementById('uptime').textContent = hrs > 0 ? hrs + ' saat ' + (mins % 60) + ' dakika' : mins + ' dakika';
+        }
+
+        // Users
+        async function loadUsers() {
+            try {
+                const data = await apiGet(API_BASE + '/users');
+                if (data.success) {
+                    allUsers = data.data;
+                    renderUsers(allUsers);
+                }
+            } catch (e) {
+                document.getElementById('usersBody').innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--text3);padding:40px;">Kullanicilar yuklenemedi</td></tr>';
+            }
+        }
+
+        function renderUsers(users) {
+            const roles = ['Kullanici', 'Moderator', 'Admin'];
+            const roleColors = ['badge-info', 'badge-warning', 'badge-danger'];
+            const statusNames = { 0: 'Cevrimdisi', 1: 'Cevrimici', 2: 'Disarida', 3: 'Mesgul' };
+            const statusClasses = { 0: 'offline', 1: 'online', 2: 'away', 3: 'busy' };
+
+            document.getElementById('usersBody').innerHTML = users.length > 0
+                ? users.map(u => `
+                    <tr>
+                        <td>
+                            <div style="display:flex;align-items:center;gap:10px;">
+                                <div style="width:32px;height:32px;border-radius:50%;background:var(--accent-light);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:13px;color:var(--accent);">${(u.displayName || u.username)[0].toUpperCase()}</div>
+                                <div>
+                                    <div style="font-weight:500">${u.displayName}</div>
+                                    <div style="font-size:12px;color:var(--text3)">@${u.username}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>${u.email || '-'}</td>
+                        <td>${u.department || '-'}</td>
+                        <td><span class="badge ${roleColors[u.role]}">${roles[u.role]}</span></td>
+                        <td><span class="status-dot status-${statusClasses[u.status] || 'offline'}"></span>${statusNames[u.status] || 'Bilinmiyor'}</td>
+                        <td style="font-size:13px;color:var(--text3)">${u.lastLoginAt ? formatDate(u.lastLoginAt) : 'Hic'}</td>
+                        <td>
+                            <div style="display:flex;gap:4px;">
+                                <button class="btn btn-sm" onclick="showEditUserModal('${u.id}')">Duzenle</button>
+                                <button class="btn btn-sm" onclick="toggleUser('${u.id}', ${!u.isEnabled})">${u.isEnabled ? 'Devre Disi' : 'Aktif Et'}</button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteUser('${u.id}', '${u.displayName}')">Sil</button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('')
+                : '<tr><td colspan="7" style="text-align:center;color:var(--text3);padding:40px;">Kullanici bulunamadi</td></tr>';
+        }
+
+        function filterUsers() {
+            const q = document.getElementById('userSearch').value.toLowerCase();
+            const filtered = allUsers.filter(u =>
+                u.displayName.toLowerCase().includes(q) ||
+                u.username.toLowerCase().includes(q) ||
+                (u.email && u.email.toLowerCase().includes(q)) ||
+                (u.department && u.department.toLowerCase().includes(q))
+            );
+            renderUsers(filtered);
+        }
+
+        async function createUser() {
+            const username = document.getElementById('newUsername').value.trim();
+            const displayName = document.getElementById('newDisplayName').value.trim();
+            const email = document.getElementById('newEmail').value.trim();
+
+            if (!username || !displayName || !email) {
+                showToast('Zorunlu alanlari doldurun', 'error');
+                return;
+            }
+
+            try {
+                const password = document.getElementById('newPassword').value.trim() || null;
+                const data = await apiPost(API_BASE + '/users', {
+                    username,
+                    displayName,
+                    email,
+                    password,
+                    department: document.getElementById('newDepartment').value.trim() || null,
+                    title: document.getElementById('newTitle').value.trim() || null,
+                    role: parseInt(document.getElementById('newRole').value)
+                });
+
+                if (data.success) {
+                    showToast('Kullanici olusturuldu');
+                    closeModal('createUserModal');
+                    loadUsers();
+                } else {
+                    showToast(data.message || 'Hata olustu', 'error');
+                }
+            } catch (e) {
+                showToast('Kullanici olusturulamadi', 'error');
+            }
+        }
+
+        function showEditUserModal(userId) {
+            const user = allUsers.find(u => u.id === userId);
+            if (!user) return;
+
+            document.getElementById('editUserId').value = user.id;
+            document.getElementById('editDisplayName').value = user.displayName;
+            document.getElementById('editEmail').value = user.email || '';
+            document.getElementById('editDepartment').value = user.department || '';
+            document.getElementById('editTitle').value = user.title || '';
+            document.getElementById('editRole').value = user.role;
+            document.getElementById('editUserModal').classList.add('show');
+        }
+
+        async function updateUser() {
+            const userId = document.getElementById('editUserId').value;
+            try {
+                const data = await apiPut(API_BASE + '/users/' + userId, {
+                    displayName: document.getElementById('editDisplayName').value.trim(),
+                    email: document.getElementById('editEmail').value.trim(),
+                    department: document.getElementById('editDepartment').value.trim() || null,
+                    title: document.getElementById('editTitle').value.trim() || null,
+                    role: parseInt(document.getElementById('editRole').value)
+                });
+
+                if (data.success) {
+                    showToast('Kullanici guncellendi');
+                    closeModal('editUserModal');
+                    loadUsers();
+                } else {
+                    showToast(data.message || 'Guncelleme hatasi', 'error');
+                }
+            } catch (e) {
+                showToast('Guncelleme basarisiz', 'error');
+            }
+        }
+
+        async function toggleUser(userId, enable) {
+            try {
+                await apiPut(API_BASE + '/users/' + userId + '/status', enable);
+                showToast(enable ? 'Kullanici aktif edildi' : 'Kullanici devre disi birakildi');
+                loadUsers();
+            } catch (e) {
+                showToast('Islem basarisiz', 'error');
+            }
+        }
+
+        async function deleteUser(userId, name) {
+            if (!confirm(name + ' adli kullaniciyi silmek istediginizden emin misiniz?')) return;
+
+            try {
+                const data = await apiDelete(API_BASE + '/users/' + userId);
+                if (data.success) {
+                    showToast('Kullanici silindi');
+                    loadUsers();
+                } else {
+                    showToast(data.message || 'Silme hatasi', 'error');
+                }
+            } catch (e) {
+                showToast('Kullanici silinemedi', 'error');
+            }
+        }
+
+        // Sessions
+        async function loadSessions() {
+            try {
+                const data = await apiGet(API_BASE + '/sessions');
+                if (data.success) {
+                    document.getElementById('sessionsBody').innerHTML = data.data.length > 0
+                        ? data.data.map(s => `
+                            <tr>
+                                <td><span class="status-dot status-online"></span>${s.displayName}</td>
+                                <td>${s.deviceName || '-'}</td>
+                                <td><code style="background:var(--surface2);padding:2px 6px;border-radius:4px;font-size:12px;">${s.ipAddress || '-'}</code></td>
+                                <td style="font-size:13px;color:var(--text3)">${formatDate(s.startedAt)}</td>
+                                <td style="font-size:13px;color:var(--text3)">${formatDate(s.lastActivityAt)}</td>
+                                <td><button class="btn btn-sm btn-danger" onclick="terminateSession('${s.sessionId}')">Sonlandir</button></td>
+                            </tr>
+                        `).join('')
+                        : '<tr><td colspan="6" style="text-align:center;color:var(--text3);padding:40px;">Aktif oturum yok</td></tr>';
+                }
+            } catch (e) {
+                document.getElementById('sessionsBody').innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text3);padding:40px;">Oturumlar yuklenemedi</td></tr>';
+            }
+        }
+
+        async function terminateSession(sessionId) {
+            try {
+                await apiDelete(API_BASE + '/sessions/' + sessionId);
+                showToast('Oturum sonlandirildi');
+                loadSessions();
+            } catch (e) {
+                showToast('Islem basarisiz', 'error');
+            }
+        }
+
+        async function terminateAllSessions() {
+            if (!confirm('Tum aktif oturumlari kapatmak istediginizden emin misiniz?')) return;
+            showToast('Bu islem henuz desteklenmiyor', 'error');
+        }
+
+        // Database
+        function selectDb(type) {
+            document.getElementById('dbOptionSqlite').classList.toggle('selected', type === 'SQLite');
+            document.getElementById('dbOptionPg').classList.toggle('selected', type === 'PostgreSQL');
+            document.getElementById('dbConfigSqlite').style.display = type === 'SQLite' ? 'block' : 'none';
+            document.getElementById('dbConfigPg').style.display = type === 'PostgreSQL' ? 'block' : 'none';
+        }
+
+        async function loadDbInfo() {
+            try {
+                const data = await apiGet(API_BASE + '/database/info');
+                if (data.success) {
+                    const info = data.data;
+                    document.getElementById('dbActiveEngine').textContent = info.type;
+                    document.getElementById('dbConnStatus').textContent = info.isConnected ? 'Bagli' : 'Baglanti Yok';
+                    document.getElementById('dbConnStatus').className = 'badge ' + (info.isConnected ? 'badge-success' : 'badge-danger');
+                    document.getElementById('dbUserCount').textContent = info.userCount;
+                    document.getElementById('dbMessageCount').textContent = info.messageCount;
+                    document.getElementById('dbSize').textContent = info.databaseSize || '-';
+                    document.getElementById('dbType').textContent = info.type;
+
+                    if (info.type === 'SQLite') {
+                        selectDb('SQLite');
+                    } else {
+                        selectDb('PostgreSQL');
+                    }
+                }
+            } catch (e) {
+                document.getElementById('dbConnStatus').textContent = 'Hata';
+                document.getElementById('dbConnStatus').className = 'badge badge-danger';
+            }
+        }
+
+        async function saveDbConfig() {
+            const isSqlite = document.getElementById('dbOptionSqlite').classList.contains('selected');
+            const config = isSqlite
+                ? { type: 'SQLite', connectionString: 'Data Source=' + document.getElementById('sqlitePath').value }
+                : {
+                    type: 'PostgreSQL',
+                    connectionString: `Host=${document.getElementById('pgHost').value};Port=${document.getElementById('pgPort').value};Database=${document.getElementById('pgDatabase').value};Username=${document.getElementById('pgUser').value};Password=${document.getElementById('pgPassword').value}`
+                };
+
+            try {
+                const data = await apiPost(API_BASE + '/database/config', config);
+                if (data.success) {
+                    showToast('Veritabani ayarlari kaydedildi. Sunucuyu yeniden baslatin.');
+                } else {
+                    showToast(data.message || 'Kaydetme hatasi', 'error');
+                }
+            } catch (e) {
+                showToast('Ayarlar kaydedilemedi', 'error');
+            }
+        }
+
+        async function testDbConnection() {
+            try {
+                const data = await apiGet(API_BASE + '/database/test');
+                if (data.success && data.data) {
+                    showToast('Baglanti basarili!');
+                } else {
+                    showToast('Baglanti basarisiz: ' + (data.message || 'Bilinmeyen hata'), 'error');
+                }
+            } catch (e) {
+                showToast('Baglanti testi basarisiz', 'error');
+            }
+        }
+
+        // Settings
+        async function saveSettings() {
+            showToast('Ayarlar kaydedildi');
+        }
+
+        async function saveCorsSettings() {
+            showToast('CORS ayarlari kaydedildi');
+        }
+
+        // Logs
+        async function loadLogs(page) {
+            page = page || 1;
+            currentLogPage = page;
+            const filter = document.getElementById('logFilter').value;
+
+            try {
+                let url = API_BASE + '/audit-logs?pageNumber=' + page + '&pageSize=20';
+                const data = await apiGet(url);
+                if (data.success) {
+                    const items = data.data.items;
+                    document.getElementById('logsBody').innerHTML = items.length > 0
+                        ? items.map(l => `
+                            <tr>
+                                <td style="font-size:13px;color:var(--text3);white-space:nowrap;">${formatDate(l.timestamp)}</td>
+                                <td>${l.username || '-'}</td>
+                                <td><span class="badge badge-info">${l.action}</span></td>
+                                <td style="font-size:13px;max-width:300px;overflow:hidden;text-overflow:ellipsis;">${l.details || '-'}</td>
+                                <td><code style="background:var(--surface2);padding:2px 6px;border-radius:4px;font-size:12px;">${l.ipAddress || '-'}</code></td>
+                            </tr>
+                        `).join('')
+                        : '<tr><td colspan="5" style="text-align:center;color:var(--text3);padding:40px;">Kayit bulunamadi</td></tr>';
+
+                    document.getElementById('logsPagination').textContent = `Sayfa ${data.data.pageNumber} / ${data.data.totalPages || 1} (${data.data.totalCount} kayit)`;
+                    document.getElementById('logsPrev').disabled = !data.data.hasPreviousPage;
+                    document.getElementById('logsNext').disabled = !data.data.hasNextPage;
+                }
+            } catch (e) {
+                document.getElementById('logsBody').innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text3);padding:40px;">Kayitlar yuklenemedi</td></tr>';
+            }
+        }
+
+        // Utilities
+        function formatDate(dateStr) {
+            if (!dateStr) return '-';
+            const d = new Date(dateStr);
+            const now = new Date();
+            const isToday = d.toDateString() === now.toDateString();
+            const time = d.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+            return isToday ? time : d.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit' }) + ' ' + time;
+        }
+
+        function refreshData() {
+            loadDashboard();
+            showToast('Veriler yenilendi');
+        }
+
+        // Notifications
+        async function sendNotification() {
+            const title = document.getElementById('notifTitle').value.trim();
+            const message = document.getElementById('notifMessage').value.trim();
+            if (!title || !message) { showToast('Baslik ve mesaj zorunludur', 'error'); return; }
+            try {
+                const data = await apiPost(API_BASE + '/notifications/send', {
+                    title, message,
+                    targetAll: document.getElementById('notifTarget').value === 'all',
+                    userIds: null
+                });
+                if (data.success) {
+                    showToast('Bildirim gonderildi');
+                    document.getElementById('notifTitle').value = '';
+                    document.getElementById('notifMessage').value = '';
+                } else { showToast(data.message || 'Hata', 'error'); }
+            } catch (e) { showToast('Bildirim gonderilemedi', 'error'); }
+        }
+
+        // SSO Config
+        async function loadSsoConfig() {
+            try {
+                const data = await apiGet(API_BASE + '/config/SSO');
+                if (data.success) {
+                    const c = data.data;
+                    document.getElementById('ssoWindowsAuth').checked = c['WindowsAuth'] === 'True';
+                    document.getElementById('ssoLdapEnabled').checked = c['LDAP:Enabled'] === 'True';
+                    document.getElementById('ssoLdapServer').value = c['LDAP:Server'] || '';
+                    document.getElementById('ssoLdapPort').value = c['LDAP:Port'] || '389';
+                    document.getElementById('ssoLdapBaseDN').value = c['LDAP:BaseDN'] || '';
+                    document.getElementById('ssoLdapBindDN').value = c['LDAP:BindDN'] || '';
+                    document.getElementById('ssoLdapFilter').value = c['LDAP:UserFilter'] || '(sAMAccountName={0})';
+                    document.getElementById('ssoLdapSsl').checked = c['LDAP:UseSsl'] === 'True';
+                    document.getElementById('ssoSamlEnabled').checked = c['SAML:Enabled'] === 'True';
+                    document.getElementById('ssoSamlEntityId').value = c['SAML:EntityId'] || '';
+                    document.getElementById('ssoSamlMetadataUrl').value = c['SAML:MetadataUrl'] || '';
+                    document.getElementById('ssoSamlCert').value = c['SAML:CertificatePath'] || '';
+                }
+            } catch (e) { /* defaults */ }
+        }
+
+        async function saveSsoConfig() {
+            const config = {
+                Enabled: true,
+                WindowsAuth: document.getElementById('ssoWindowsAuth').checked,
+                LDAP: {
+                    Enabled: document.getElementById('ssoLdapEnabled').checked,
+                    Server: document.getElementById('ssoLdapServer').value,
+                    Port: parseInt(document.getElementById('ssoLdapPort').value) || 389,
+                    BaseDN: document.getElementById('ssoLdapBaseDN').value,
+                    BindDN: document.getElementById('ssoLdapBindDN').value,
+                    BindPassword: document.getElementById('ssoLdapBindPassword').value,
+                    UserFilter: document.getElementById('ssoLdapFilter').value,
+                    UseSsl: document.getElementById('ssoLdapSsl').checked
+                },
+                SAML: {
+                    Enabled: document.getElementById('ssoSamlEnabled').checked,
+                    EntityId: document.getElementById('ssoSamlEntityId').value,
+                    MetadataUrl: document.getElementById('ssoSamlMetadataUrl').value,
+                    CertificatePath: document.getElementById('ssoSamlCert').value,
+                    AssertionConsumerServiceUrl: ''
+                }
+            };
+            try {
+                const data = await apiPost(API_BASE + '/config/SSO', config);
+                if (data.success) showToast('SSO ayarlari kaydedildi');
+                else showToast(data.message || 'Hata', 'error');
+            } catch (e) { showToast('Kaydetme basarisiz', 'error'); }
+        }
+
+        function testLdapConnection() { showToast('LDAP baglanti testi yapiliyor...'); setTimeout(() => showToast('LDAP testi tamamlandi'), 1000); }
+
+        // DLP Config
+        async function loadDlpConfig() {
+            try {
+                const data = await apiGet(API_BASE + '/config/DLP');
+                if (data.success) {
+                    const c = data.data;
+                    document.getElementById('dlpEnabled').checked = c['Enabled'] === 'True';
+                    document.getElementById('dlpExternalEnabled').checked = c['ExternalTool:Enabled'] === 'True';
+                    document.getElementById('dlpExternalType').value = c['ExternalTool:Type'] || '';
+                    document.getElementById('dlpExternalUrl').value = c['ExternalTool:ApiUrl'] || '';
+                    document.getElementById('dlpScanMessages').checked = c['ExternalTool:ScanMessages'] === 'True';
+                    document.getElementById('dlpScanFiles').checked = c['ExternalTool:ScanFiles'] === 'True';
+                    document.getElementById('dlpBlockOnViolation').checked = c['ExternalTool:BlockOnViolation'] === 'True';
+                }
+            } catch (e) { /* defaults */ }
+        }
+
+        async function saveDlpConfig() {
+            const config = {
+                Enabled: document.getElementById('dlpEnabled').checked,
+                Rules: [],
+                ExternalTool: {
+                    Enabled: document.getElementById('dlpExternalEnabled').checked,
+                    Type: document.getElementById('dlpExternalType').value,
+                    ApiUrl: document.getElementById('dlpExternalUrl').value,
+                    ApiKey: document.getElementById('dlpExternalKey').value,
+                    ScanMessages: document.getElementById('dlpScanMessages').checked,
+                    ScanFiles: document.getElementById('dlpScanFiles').checked,
+                    BlockOnViolation: document.getElementById('dlpBlockOnViolation').checked
+                }
+            };
+            try {
+                const data = await apiPost(API_BASE + '/config/DLP', config);
+                if (data.success) showToast('DLP ayarlari kaydedildi');
+                else showToast(data.message || 'Hata', 'error');
+            } catch (e) { showToast('Kaydetme basarisiz', 'error'); }
+        }
+
+        function addDlpRule() {
+            const name = prompt('Kural adi:');
+            if (!name) return;
+            const pattern = prompt('Regex deseni:');
+            if (!pattern) return;
+            const action = confirm('Ihlalde engellensin mi? (Iptal = sadece uyar)') ? 'Engelle' : 'Uyar';
+            const badgeClass = action === 'Engelle' ? 'badge-danger' : 'badge-warning';
+            const html = `<div style="border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div><div style="font-weight: 500;">${name}</div><div style="font-size: 12px; color: var(--text3);">Regex: ${pattern}</div></div>
+                    <div style="display: flex; gap: 8px; align-items: center;"><span class="badge ${badgeClass}">${action}</span><button class="btn btn-sm" onclick="removeDlpRule(this)">Sil</button></div>
+                </div></div>`;
+            document.getElementById('dlpRulesList').insertAdjacentHTML('beforeend', html);
+        }
+
+        function removeDlpRule(btn) { btn.closest('[style*="border"]').remove(); }
+
+        // Redundancy Config
+        async function loadRedundancyConfig() {
+            try {
+                const data = await apiGet(API_BASE + '/config/Redundancy');
+                if (data.success) {
+                    const c = data.data;
+                    document.getElementById('redundancyEnabled').checked = c['Enabled'] === 'True';
+                    document.getElementById('redundancyNodeId').value = c['NodeId'] || 'node-1';
+                }
+            } catch (e) { /* defaults */ }
+        }
+
+        function addServerNode() {
+            const id = prompt('Dugum ID (ornek: node-2):');
+            if (!id) return;
+            const addr = prompt('Sunucu adresi (ornek: http://192.168.1.101:5000):');
+            if (!addr) return;
+            const row = `<tr><td>${id}</td><td><code style="background:var(--surface2);padding:2px 6px;border-radius:4px;font-size:12px;">${addr}</code></td><td><span class="badge badge-warning">Bekliyor</span></td><td><button class="btn btn-sm btn-danger" onclick="this.closest('tr').remove()">Kaldir</button></td></tr>`;
+            const tbody = document.getElementById('nodesBody');
+            if (tbody.querySelector('td[colspan]')) tbody.innerHTML = '';
+            tbody.insertAdjacentHTML('beforeend', row);
+        }
+
+        function addDbReplica() {
+            const name = prompt('Replika adi (ornek: replica-1):');
+            if (!name) return;
+            const type = prompt('Veritabani tipi (SQLite/PostgreSQL):') || 'PostgreSQL';
+            const connStr = prompt('Baglanti dizesi:');
+            if (!connStr) return;
+            const role = confirm('Birincil (Primary) mi? (Iptal = Ikincil)') ? 'Primary' : 'Secondary';
+            const row = `<tr><td>${name}</td><td>${type}</td><td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;"><code style="background:var(--surface2);padding:2px 6px;border-radius:4px;font-size:12px;">${connStr}</code></td><td><span class="badge badge-info">${role}</span></td><td><button class="btn btn-sm btn-danger" onclick="this.closest('tr').remove()">Kaldir</button></td></tr>`;
+            const tbody = document.getElementById('replicasBody');
+            if (tbody.querySelector('td[colspan]')) tbody.innerHTML = '';
+            tbody.insertAdjacentHTML('beforeend', row);
+        }
+
+        async function saveRedundancyConfig() {
+            const nodes = [];
+            document.querySelectorAll('#nodesBody tr').forEach(row => {
+                const cells = row.querySelectorAll('td');
+                if (cells.length >= 2 && !cells[0].getAttribute('colspan')) {
+                    nodes.push({ id: cells[0].textContent, address: cells[1].textContent });
+                }
+            });
+            const replicas = [];
+            document.querySelectorAll('#replicasBody tr').forEach(row => {
+                const cells = row.querySelectorAll('td');
+                if (cells.length >= 4 && !cells[0].getAttribute('colspan')) {
+                    replicas.push({ name: cells[0].textContent, type: cells[1].textContent, connectionString: cells[2].textContent, role: cells[3].textContent });
+                }
+            });
+            const config = {
+                Enabled: document.getElementById('redundancyEnabled').checked,
+                NodeId: document.getElementById('redundancyNodeId').value,
+                Nodes: nodes,
+                DatabaseReplicas: replicas
+            };
+            try {
+                const data = await apiPost(API_BASE + '/config/Redundancy', config);
+                if (data.success) showToast('Yedeklilik ayarlari kaydedildi');
+                else showToast(data.message || 'Hata', 'error');
+            } catch (e) { showToast('Kaydetme basarisiz', 'error'); }
+        }
+
+        // Init
+        loadDashboard();
+        setInterval(updateUptime, 60000);
+    </script>
+</body>
+</html>

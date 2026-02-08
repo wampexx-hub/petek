@@ -1,10 +1,10 @@
-# Ekip Messenger
+# Petek Messenger
 
 Kurumsal iç iletişim için tasarlanmış, Windows ekosistemiyle tam entegre, yüksek güvenlikli ve modern bir anlık mesajlaşma uygulaması.
 
 ## Genel Bakış
 
-Ekip Messenger, kurumsal kimlik yönetimi (Active Directory) ile uyumlu, denetlenebilir (Surveillance/DLP) ve kullanıcı dostu bir haberleşme altyapısı sağlar.
+Petek Messenger, kurumsal kimlik yönetimi (Active Directory) ile uyumlu, denetlenebilir (Surveillance/DLP) ve kullanıcı dostu bir haberleşme altyapısı sağlar.
 
 ### Temel Özellikler
 
@@ -21,14 +21,14 @@ Ekip Messenger, kurumsal kimlik yönetimi (Active Directory) ile uyumlu, denetle
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                      Ekip.Desktop (WPF)                         │
+│                      Petek.Desktop (WPF)                        │
 │                     Windows Desktop Client                       │
 └─────────────────────────────────────────────────────────────────┘
                               │
                               │ SignalR / HTTPS
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                      Ekip.Server                                │
+│                      Petek.Server                               │
 │                   ASP.NET Core 8 API                            │
 │         ┌──────────────────┬──────────────────┐                 │
 │         │    SignalR Hub   │    REST API      │                 │
@@ -54,22 +54,22 @@ Ekip Messenger, kurumsal kimlik yönetimi (Active Directory) ile uyumlu, denetle
 ## Proje Yapısı
 
 ```
-ekip/
+Petek/
 ├── src/
-│   ├── Ekip.Desktop/          # WPF Windows masaüstü uygulaması
+│   ├── Petek.Desktop/          # WPF Windows masaüstü uygulaması
 │   │   ├── Views/             # XAML görünümleri
 │   │   ├── ViewModels/        # MVVM view modelleri
 │   │   ├── Services/          # API ve SignalR istemcileri
 │   │   ├── Themes/            # Fluent Design stilleri
 │   │   └── Converters/        # XAML dönüştürücüleri
 │   │
-│   ├── Ekip.Server/           # ASP.NET Core backend
+│   ├── Petek.Server/           # ASP.NET Core backend
 │   │   ├── Controllers/       # REST API controller'ları
 │   │   ├── Hubs/              # SignalR hub'ları
 │   │   ├── Services/          # İş mantığı servisleri
 │   │   └── Data/              # Entity Framework context ve entity'ler
 │   │
-│   └── Ekip.Shared/           # Ortak modeller ve DTO'lar
+│   └── Petek.Shared/           # Ortak modeller ve DTO'lar
 │       ├── DTOs/              # Veri transfer objeleri
 │       ├── Enums/             # Enum tanımları
 │       └── Interfaces/        # Ortak interface'ler
@@ -77,7 +77,7 @@ ekip/
 ├── docs/
 │   └── PRD.md                 # Ürün Gereksinim Dokümanı
 │
-└── Ekip.sln                   # Visual Studio solution dosyası
+└── Petek.sln                   # Visual Studio solution dosyası
 ```
 
 ## Hızlı Başlangıç
@@ -93,27 +93,27 @@ ekip/
 ### 1. Repository'yi Klonlayın
 
 ```bash
-git clone https://github.com/your-org/ekip.git
-cd ekip
+git clone https://github.com/your-org/petek.git
+cd petek
 ```
 
 ### 2. Veritabanlarını Başlatın
 
 ```bash
 # Docker ile (önerilen)
-docker run -d --name ekip-postgres -p 5432:5432 \
+docker run -d --name petek-postgres -p 5432:5432 \
   -e POSTGRES_USER=postgres \
   -e POSTGRES_PASSWORD=postgres \
-  -e POSTGRES_DB=ekip \
+  -e POSTGRES_DB=petek \
   postgres:15
 
-docker run -d --name ekip-redis -p 6379:6379 redis:7-alpine
+docker run -d --name petek-redis -p 6379:6379 redis:7-alpine
 ```
 
 ### 3. Sunucuyu Çalıştırın
 
 ```bash
-cd src/Ekip.Server
+cd src/Petek.Server
 dotnet run
 ```
 
@@ -122,7 +122,7 @@ Sunucu varsayılan olarak `https://localhost:5001` adresinde çalışır.
 ### 4. Desktop İstemcisini Çalıştırın
 
 ```bash
-cd src/Ekip.Desktop
+cd src/Petek.Desktop
 dotnet run
 ```
 
@@ -133,12 +133,12 @@ Sunucu çalıştırıldığında Swagger UI şu adreste erişilebilir:
 
 ## Konfigürasyon
 
-Sunucu ayarları `src/Ekip.Server/appsettings.json` dosyasından yapılandırılır:
+Sunucu ayarları `src/Petek.Server/appsettings.json` dosyasından yapılandırılır:
 
 ```json
 {
   "ConnectionStrings": {
-    "PostgreSQL": "Host=localhost;Port=5432;Database=ekip;Username=postgres;Password=postgres",
+    "PostgreSQL": "Host=localhost;Port=5432;Database=petek;Username=postgres;Password=postgres",
     "Redis": "localhost:6379"
   },
   "FileStorage": {

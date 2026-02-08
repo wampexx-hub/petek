@@ -1,7 +1,7 @@
-# Ürün Gereksinim Dokümanı (PRD): Ekip Messenger
+# Ürün Gereksinim Dokümanı (PRD): Petek Messenger
 
-**Proje Adı:** Ekip
-**Sürüm:** 1.0.0 (MVP)
+**Proje Adı:** Petek
+**Sürüm:** 1.1.0
 **Hedef Platform:** Windows (Desktop)
 **Doküman Sahibi:** Ürün Yönetimi / Sistem Yönetimi
 
@@ -9,7 +9,7 @@
 
 ## 1. Ürün Vizyonu ve Amacı
 
-"Ekip", kurumsal iç iletişim için tasarlanmış, Windows ekosistemiyle tam entegre, yüksek güvenlikli ve modern bir anlık mesajlaşma uygulamasıdır. Amacı, kurumsal kimlik yönetimi (AD) ile uyumlu, denetlenebilir (Surveillance/DLP) ve kullanıcı dostu bir haberleşme altyapısı sağlamaktır.
+"Petek", kurumsal iç iletişim için tasarlanmış, Windows ekosistemiyle tam entegre, yüksek güvenlikli ve modern bir anlık mesajlaşma uygulamasıdır. Amacı, kurumsal kimlik yönetimi (AD) ile uyumlu, denetlenebilir (Surveillance/DLP) ve kullanıcı dostu bir haberleşme altyapısı sağlamaktır.
 
 ---
 
@@ -31,7 +31,7 @@
 |----|------------|----------|
 | **FR-01** | Windows AD Entegrasyonu | Uygulama, Windows Active Directory ile entegre çalışmalıdır. Kullanıcılar LDAP/Kerberos protokolleri üzerinden mevcut oturumlarıyla giriş yapabilmelidir. |
 | **FR-02** | Tek Oturum Açma (SSO) | Windows'ta oturum açmış kullanıcı, uygulamayı açtığında tekrar şifre girmeden otomatik bağlanmalıdır. |
-| **FR-03** | Profil Senkronizasyonu | Kullanıcının departmanı, ünvanı ve e-posta adresi doğrudan AD üzerinden çekilmelidir. |
+| **FR-03** | Profil Senkronizasyonu | Kullanıcının departmanı, ünvanı ve e-posta adresi doğrudan AD üzerinden çekivlmelidir. |
 
 ### 3.2. Mesajlaşma Özellikleri
 
@@ -63,7 +63,7 @@
 
 | Katman | Teknoloji | Açıklama |
 |--------|-----------|----------|
-| **Frontend (UI/UX)** | WPF (.NET 8/9) veya WinUI 3 (Windows App SDK) | Modern ve şık görünüm. Fluent Design sistemine (Windows 11 stili) sadık kalınmalıdır. |
+| **Frontend (UI/UX)** | WPF (.NET 8/9) | Modern ve şık görünüm. Fluent Design sistemine (Windows 11 stili) sadık kalınmalıdır. |
 | **Backend** | SignalR veya WebSockets | Yüksek performanslı mesaj iletimi için gerçek zamanlı iletişim altyapısı. |
 | **Veritabanı (İlişkisel)** | PostgreSQL | Kullanıcı ve grup ilişkileri için. |
 | **Veritabanı (Cache)** | Redis | Anlık mesaj cache mekanizması için. |
@@ -75,7 +75,7 @@
 ┌─────────────────────────────────────────────────────────────────┐
 │                         Windows Desktop                          │
 │  ┌─────────────────────────────────────────────────────────┐   │
-│  │              Ekip Messenger (WPF/WinUI 3)               │   │
+│  │              Petek Messenger (WPF)                      │   │
 │  │  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐   │   │
 │  │  │  Chat   │  │ Contacts│  │  Files  │  │ Settings│   │   │
 │  │  │  View   │  │  View   │  │  View   │  │  View   │   │   │
@@ -139,7 +139,7 @@
 
 ```
 ┌────────────────────────────────────────────────────────────────────┐
-│ ┌──┐  Ekip Messenger                              ─ □ ×           │
+│ ┌──┐  Petek Messenger                              ─ □ ×           │
 │ └──┘                                                               │
 ├────────┬───────────────────────┬───────────────────────────────────┤
 │        │ 🔍 Ara...             │  Ahmet Yılmaz                     │
@@ -191,8 +191,8 @@ Legend:
 
 ```
 ┌────────────────────────────────────────────────────────────────────┐
-│  Ekip Admin Panel                                    Admin ▼      │
-├────────┬───────────────────────────────────────────────────────────┤
+│  Petek Admin Panel                                   Admin ▼      │
+│  ├────────┬───────────────────────────────────────────────────────────┤
 │        │ Dashboard                                                 │
 │  📊   │ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐          │
 │        │ │ Aktif       │ │ Günlük      │ │ Dosya       │          │
@@ -277,4 +277,4 @@ Legend:
 
 ---
 
-*Bu doküman, Ekip Messenger projesinin MVP sürümü için temel gereksinimleri ve beklentileri tanımlamaktadır. Değişiklikler, ilgili paydaşların onayı ile güncellenecektir.*
+*Bu doküman, Petek Messenger projesinin 1.1.0 sürümü için temel gereksinimleri ve beklentileri tanımlamaktadır. Değişiklikler, ilgili paydaşların onayı ile güncellenecektir.*

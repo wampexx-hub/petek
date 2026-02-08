@@ -1,0 +1,234 @@
+<Window x:Class="Petek.Desktop.Views.LoginWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Petek Messenger - Giriş"
+        Height="680" Width="420"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        Icon="pack://application:,,,/Assets/app.ico">
+
+    <Border CornerRadius="16" Background="{DynamicResource BackgroundBrush}" BorderBrush="{DynamicResource DividerBrush}" BorderThickness="1">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="25" Opacity="0.15" ShadowDepth="5" Color="#000000"/>
+        </Border.Effect>
+        <Grid Margin="36,28,36,24">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Logo Area -->
+            <StackPanel Grid.Row="0" Margin="0,12,0,28" HorizontalAlignment="Center">
+                <!-- App Icon -->
+                <Image Source="pack://application:,,,/Assets/logo.png"
+                       Width="72" Height="72"
+                       RenderOptions.BitmapScalingMode="HighQuality"
+                       HorizontalAlignment="Center">
+                    <Image.Effect>
+                        <DropShadowEffect BlurRadius="12" Opacity="0.2" ShadowDepth="3" Color="#F59E0B"/>
+                    </Image.Effect>
+                </Image>
+                <TextBlock Text="PETEK" Margin="0,14,0,0" FontSize="26" FontWeight="SemiBold"
+                           Foreground="{DynamicResource TextPrimaryBrush}" HorizontalAlignment="Center"
+                           FontFamily="Segoe UI Variable, Segoe UI"/>
+                <TextBlock Text="M  E  S  S  E  N  G  E  R" FontSize="10" FontWeight="SemiBold"
+                           Foreground="{DynamicResource AccentBrush}" HorizontalAlignment="Center" Margin="0,4,0,0"/>
+            </StackPanel>
+
+            <!-- Status/Error Area -->
+            <StackPanel Grid.Row="1" Margin="0,0,0,16">
+                <TextBlock Text="{Binding StatusMessage}"
+                           Foreground="{DynamicResource TextSecondaryBrush}"
+                           HorizontalAlignment="Center"
+                           TextWrapping="Wrap"
+                           TextAlignment="Center"
+                           FontSize="13"/>
+
+                <Border Margin="0,10,0,0"
+                        Background="#1CC42B1C"
+                        CornerRadius="6"
+                        Padding="12,8"
+                        Visibility="{Binding ErrorMessage, Converter={StaticResource StringToVisibilityConverter}}">
+                    <TextBlock Text="{Binding ErrorMessage}"
+                               Foreground="{DynamicResource StatusBusyBrush}"
+                               HorizontalAlignment="Center"
+                               FontWeight="SemiBold"
+                               TextWrapping="Wrap"
+                               TextAlignment="Center"
+                               FontSize="12"/>
+                </Border>
+            </StackPanel>
+
+            <!-- Action Area -->
+            <StackPanel Grid.Row="2" VerticalAlignment="Center">
+                <!-- Username Field -->
+                <TextBlock Text="Kullanıcı Adı" FontSize="12" FontWeight="SemiBold"
+                           Foreground="{DynamicResource TextSecondaryBrush}" Margin="2,0,0,6"/>
+                <TextBox Style="{StaticResource FluentTextBox}"
+                         Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}"
+                         Tag="Kullanıcı adınızı girin"
+                         Height="42"
+                         Margin="0,0,0,14"
+                         IsEnabled="{Binding IsLoading, Converter={StaticResource InverseBooleanConverter}}"/>
+
+                <!-- Password Field -->
+                <TextBlock Text="Şifre" FontSize="12" FontWeight="SemiBold"
+                           Foreground="{DynamicResource TextSecondaryBrush}" Margin="2,0,0,6"/>
+                <PasswordBox x:Name="PasswordBox"
+                             Style="{StaticResource FluentPasswordBox}"
+                             Tag="Şifrenizi girin"
+                             Height="42"
+                             Margin="0,0,0,18"
+                             IsEnabled="{Binding IsLoading, Converter={StaticResource InverseBooleanConverter}}"
+                             PasswordChanged="PasswordBox_PasswordChanged"
+                             KeyDown="PasswordBox_KeyDown"/>
+
+                <!-- Giriş Yap Button -->
+                <Button Command="{Binding LoginWithCredentialsCommand}"
+                        Style="{StaticResource AccentButton}"
+                        Height="44"
+                        FontSize="14"
+                        FontWeight="SemiBold"
+                        IsEnabled="{Binding IsLoading, Converter={StaticResource InverseBooleanConverter}}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE72E;" FontFamily="Segoe MDL2 Assets" FontSize="16" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                        <TextBlock Text="Giriş Yap" VerticalAlignment="Center" FontSize="14"/>
+                    </StackPanel>
+                    <Button.Effect>
+                        <DropShadowEffect BlurRadius="12" Opacity="0.25" ShadowDepth="3" Color="#F59E0B"/>
+                    </Button.Effect>
+                </Button>
+
+                <!-- Separator -->
+                <Grid Margin="0,22,0,22">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Border Grid.Column="0" BorderBrush="{DynamicResource DividerBrush}" BorderThickness="0,0,0,1" VerticalAlignment="Center"/>
+                    <TextBlock Grid.Column="1" Text="veya" FontSize="12" Foreground="{DynamicResource TextTertiaryBrush}" Margin="14,0"/>
+                    <Border Grid.Column="2" BorderBrush="{DynamicResource DividerBrush}" BorderThickness="0,0,0,1" VerticalAlignment="Center"/>
+                </Grid>
+
+                <!-- SSO Login Button -->
+                <Button Command="{Binding LoginCommand}"
+                        HorizontalAlignment="Stretch"
+                        Height="42"
+                        Cursor="Hand"
+                        IsEnabled="{Binding IsLoading, Converter={StaticResource InverseBooleanConverter}}">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="{DynamicResource SurfaceVariantBrush}"/>
+                            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+                            <Setter Property="BorderThickness" Value="1"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border x:Name="border"
+                                                Background="{TemplateBinding Background}"
+                                                BorderBrush="{TemplateBinding BorderBrush}"
+                                                BorderThickness="{TemplateBinding BorderThickness}"
+                                                CornerRadius="8"
+                                                Padding="16,8">
+                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="border" Property="Background" Value="{DynamicResource SurfaceBrush}"/>
+                                                <Setter TargetName="border" Property="BorderBrush" Value="{DynamicResource AccentBrushLight1}"/>
+                                            </Trigger>
+                                            <Trigger Property="IsPressed" Value="True">
+                                                <Setter TargetName="border" Property="Background" Value="{DynamicResource AccentBrushLight2}"/>
+                                            </Trigger>
+                                            <Trigger Property="IsEnabled" Value="False">
+                                                <Setter Property="Opacity" Value="0.5"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </Button.Style>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE8A1;" FontFamily="Segoe MDL2 Assets" FontSize="16" VerticalAlignment="Center" Margin="0,0,10,0"
+                                   Foreground="{DynamicResource TextSecondaryBrush}"/>
+                        <TextBlock Text="Windows ile Giriş Yap (SSO)" VerticalAlignment="Center" FontSize="13"
+                                   Foreground="{DynamicResource TextPrimaryBrush}"/>
+                    </StackPanel>
+                </Button>
+
+                <TextBlock Text="Kurumsal kimlik bilgileriniz otomatik olarak kullanılacaktır."
+                           FontSize="10"
+                           Foreground="{DynamicResource TextTertiaryBrush}"
+                           HorizontalAlignment="Center"
+                           Margin="0,8,0,0"
+                           TextAlignment="Center"/>
+            </StackPanel>
+
+            <!-- Footer -->
+            <StackPanel Grid.Row="3" Margin="0,16,0,0">
+                <Button Click="Exit_Click"
+                        HorizontalAlignment="Center"
+                        Padding="16,8"
+                        Cursor="Hand">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="BorderBrush" Value="Transparent"/>
+                            <Setter Property="BorderThickness" Value="0"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border x:Name="border"
+                                                Background="{TemplateBinding Background}"
+                                                CornerRadius="6"
+                                                Padding="{TemplateBinding Padding}">
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                <TextBlock Text="&#xE7E8;" FontFamily="Segoe MDL2 Assets" FontSize="12"
+                                                           VerticalAlignment="Center" Margin="0,0,6,0"
+                                                           Foreground="{DynamicResource TextTertiaryBrush}"/>
+                                                <TextBlock Text="Uygulamadan Çık" FontSize="12"
+                                                           Foreground="{DynamicResource TextTertiaryBrush}"/>
+                                            </StackPanel>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="border" Property="Background" Value="{DynamicResource SurfaceVariantBrush}"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </StackPanel>
+
+            <!-- Loading Indicator Overlay -->
+            <Grid Grid.RowSpan="4" Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}"
+                  IsHitTestVisible="True">
+                <Border Background="{DynamicResource BackgroundBrush}" Opacity="0.7" CornerRadius="16"/>
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <ProgressBar IsIndeterminate="True"
+                                 Width="180" Height="4"
+                                 Foreground="{DynamicResource AccentBrush}"
+                                 Background="{DynamicResource DividerBrush}"
+                                 BorderThickness="0"/>
+                    <TextBlock Text="Giriş yapılıyor..."
+                               Foreground="{DynamicResource TextSecondaryBrush}"
+                               FontSize="12"
+                               HorizontalAlignment="Center"
+                               Margin="0,12,0,0"/>
+                </StackPanel>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>

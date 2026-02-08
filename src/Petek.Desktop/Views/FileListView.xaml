@@ -1,0 +1,53 @@
+<Page x:Class="Petek.Desktop.Views.FileListView"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      mc:Ignorable="d"
+      Background="Transparent">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" Padding="12,8">
+            <TextBlock Text="Dosyalar"
+                       FontSize="18"
+                       FontWeight="SemiBold"
+                       Foreground="{DynamicResource TextPrimaryBrush}"/>
+        </Border>
+
+        <!-- File List -->
+        <Grid Grid.Row="1">
+            <!-- Empty state when no files -->
+            <StackPanel VerticalAlignment="Center"
+                        HorizontalAlignment="Center">
+                <TextBlock Text="&#xE8B7;"
+                           FontFamily="Segoe MDL2 Assets"
+                           FontSize="48"
+                           Foreground="{DynamicResource TextTertiaryBrush}"
+                           HorizontalAlignment="Center"/>
+                <TextBlock Text="Henüz dosya yok"
+                           FontSize="14"
+                           Foreground="{DynamicResource TextSecondaryBrush}"
+                           HorizontalAlignment="Center"
+                           Margin="0,12,0,0"/>
+                <TextBlock Text="Paylaşılan dosyalar burada görünecektir"
+                           FontSize="12"
+                           Foreground="{DynamicResource TextTertiaryBrush}"
+                           HorizontalAlignment="Center"
+                           Margin="0,4,0,0"/>
+            </StackPanel>
+
+            <!-- ListBox for files (hidden when empty, populated from code-behind) -->
+            <ListBox x:Name="FilesList"
+                     Background="Transparent"
+                     BorderThickness="0"
+                     Visibility="Collapsed"
+                     ItemContainerStyle="{StaticResource ContactListItem}"/>
+        </Grid>
+    </Grid>
+</Page>
