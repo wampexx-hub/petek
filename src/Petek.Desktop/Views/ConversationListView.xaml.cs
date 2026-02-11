@@ -47,7 +47,8 @@ public partial class ConversationListView : Page
     {
         if (ConversationList.SelectedItem is ConversationItemViewModel conversation)
         {
-            // TODO: Navigate to chat view with selected conversation
+            var mainWindow = System.Windows.Application.Current.MainWindow as MainWindow;
+            mainWindow?.OpenConversation(conversation.Id);
         }
     }
 }

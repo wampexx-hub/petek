@@ -115,7 +115,40 @@ public partial class ContactListView : Page
 
         item.Header = panel;
         item.Tag = contact;
+
+        // Tek tikla kisi detayini goster
+        item.Selected += (s, e) =>
+        {
+            e.Handled = true;
+            var mainWindow = System.Windows.Application.Current.MainWindow as MainWindow;
+            mainWindow?.ShowContactDetail(contact);
+        };
+
+        // Cift tikla direkt sohbet baslat
+        item.MouseDoubleClick += (s, e) =>
+        {
+            e.Handled = true;
+            StartConversationWithContact(contact);
+        };
+
         return item;
+    }
+
+    private async void StartConversationWithContact(ContactItemViewModel contact)
+    {
+        try
+        {
+            var apiClient = App.Services.GetRequiredService<IApiClient>();
+            var response = await apiClient.PostAsync<ApiResponse<ConversationDto>>(
+                $"api/conversations/direct/{contact.Id}", null);
+
+            if (response?.Success == true && response.Data != null)
+            {
+                var mainWindow = System.Windows.Application.Current.MainWindow as MainWindow;
+                mainWindow?.OpenConversation(response.Data.Id);
+            }
+        }
+        catch { }
     }
 
     private void LoadCustomCategories()

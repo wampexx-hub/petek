@@ -25,6 +25,11 @@ public partial class ChatView : Page
         MessagesList.ItemsSource = _viewModel.Messages;
     }
 
+    public async void LoadConversation(Guid conversationId)
+    {
+        await _viewModel.LoadConversationCommand.ExecuteAsync(conversationId);
+    }
+
     private void SendMessage_Click(object sender, RoutedEventArgs e)
     {
         _viewModel.SendMessageCommand.Execute(null);
