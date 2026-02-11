@@ -26,6 +26,7 @@ public partial class MainWindow : Window
         UpdateProfileInitial();
         LoadCurrentStatus();
         SubscribeToNotifications();
+        SetupDesktopNotifications();
     }
 
     #region Status Change
@@ -126,7 +127,46 @@ public partial class MainWindow : Window
                 {
                     ShowToast(title, message, ToastType.Info);
                 });
+
+                // Masaustu bildirimi de goster
+                try
+                {
+                    var notificationService = App.Services.GetRequiredService<INotificationService>();
+                    notificationService.ShowNotification(title, message);
+                }
+                catch { }
             };
+
+            // Yeni mesaj geldiginde masaustu bildirimi goster
+            signalR.MessageReceived += (messageDto) =>
+            {
+                try
+                {
+                    var authService = App.Services.GetRequiredService<IAuthenticationService>();
+                    // Kendi mesajlarimiz icin bildirim gosterme
+                    if (authService.CurrentUser != null && messageDto.SenderId == authService.CurrentUser.Id)
+                        return;
+
+                    var notificationService = App.Services.GetRequiredService<INotificationService>();
+                    var senderName = !string.IsNullOrEmpty(messageDto.SenderName) ? messageDto.SenderName : "Bilinmeyen";
+                    notificationService.ShowMessageNotification(
+                        senderName,
+                        messageDto.Content ?? "",
+                        messageDto.Type,
+                        messageDto.ConversationId);
+                }
+                catch { }
+            };
+        }
+        catch { }
+    }
+
+    private void SetupDesktopNotifications()
+    {
+        try
+        {
+            var notificationService = App.Services.GetRequiredService<INotificationService>();
+            notificationService.SetupSystemTray(this);
         }
         catch { }
     }

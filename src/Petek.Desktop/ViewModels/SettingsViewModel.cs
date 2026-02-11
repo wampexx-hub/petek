@@ -7,6 +7,7 @@ namespace Petek.Desktop.ViewModels;
 public partial class SettingsViewModel : ObservableObject
 {
     private readonly IThemeService _themeService;
+    private readonly INotificationService _notificationService;
 
     [ObservableProperty]
     private ThemeMode _selectedTheme;
@@ -26,10 +27,19 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty]
     private bool _enableTransparency = true;
 
-    public SettingsViewModel(IThemeService themeService)
+    [ObservableProperty]
+    private bool _minimizeToTray = true;
+
+    public SettingsViewModel(IThemeService themeService, INotificationService notificationService)
     {
         _themeService = themeService;
+        _notificationService = notificationService;
         _selectedTheme = _themeService.CurrentTheme;
+
+        // Bildirim servisinden mevcut ayarlari yukle
+        _enableNotifications = _notificationService.IsEnabled;
+        _enableSounds = _notificationService.SoundEnabled;
+        _minimizeToTray = _notificationService.ShowInTaskbar;
     }
 
     partial void OnSelectedThemeChanged(ThemeMode value)
@@ -37,11 +47,50 @@ public partial class SettingsViewModel : ObservableObject
         _themeService.SetTheme(value);
     }
 
+    partial void OnEnableNotificationsChanged(bool value)
+    {
+        _notificationService.IsEnabled = value;
+    }
+
+    partial void OnEnableSoundsChanged(bool value)
+    {
+        _notificationService.SoundEnabled = value;
+    }
+
+    partial void OnMinimizeToTrayChanged(bool value)
+    {
+        _notificationService.ShowInTaskbar = value;
+    }
+
     [RelayCommand]
     private void SaveSettings()
     {
-        // Save settings to local storage or user preferences
-        // This would typically use a settings storage service
+        // Ayarlar zaten partial OnChanged metodlariyla aninda uygulanir
+        // Ek olarak local dosyaya kaydet
+        try
+        {
+            var settingsPath = System.IO.Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                "PetekMessenger", "notification-settings.json");
+
+            var dir = System.IO.Path.GetDirectoryName(settingsPath);
+            if (dir != null && !System.IO.Directory.Exists(dir))
+                System.IO.Directory.CreateDirectory(dir);
+
+            var settings = new Dictionary<string, object>
+            {
+                ["EnableNotifications"] = EnableNotifications,
+                ["EnableSounds"] = EnableSounds,
+                ["MinimizeToTray"] = MinimizeToTray,
+                ["AutoAway"] = AutoAway,
+                ["AwayTimeoutMinutes"] = AwayTimeoutMinutes
+            };
+
+            var json = System.Text.Json.JsonSerializer.Serialize(settings,
+                new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+            System.IO.File.WriteAllText(settingsPath, json);
+        }
+        catch { }
     }
 
     [RelayCommand]
@@ -50,6 +99,7 @@ public partial class SettingsViewModel : ObservableObject
         SelectedTheme = ThemeMode.System;
         EnableNotifications = true;
         EnableSounds = true;
+        MinimizeToTray = true;
         AutoAway = true;
         AwayTimeoutMinutes = 5;
         EnableTransparency = true;

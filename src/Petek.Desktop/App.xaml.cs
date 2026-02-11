@@ -56,6 +56,7 @@ public partial class App : Application
         services.AddSingleton<ISignalRService, SignalRService>();
         services.AddSingleton<IAuthenticationService, AuthenticationService>();
         services.AddSingleton<IScreenshotService, ScreenshotService>();
+        services.AddSingleton<INotificationService, NotificationService>();
 
         // ViewModels
         services.AddTransient<MainViewModel>();
@@ -91,6 +92,13 @@ public partial class App : Application
     protected override void OnExit(ExitEventArgs e)
     {
         // Cleanup: Safely dispose async services before exiting
+        try
+        {
+            var notificationService = Services.GetService<INotificationService>();
+            notificationService?.Dispose();
+        }
+        catch { }
+
         try
         {
             var signalR = Services.GetService<ISignalRService>();
