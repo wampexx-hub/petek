@@ -20,7 +20,8 @@
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.0" />
     <PackageReference Include="StackExchange.Redis" Version="2.7.10" />
     <PackageReference Include="System.DirectoryServices.Protocols" Version="8.0.0" />
-    <!-- Swashbuckle removed - using custom admin dashboard -->
+    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.HealthChecks" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>

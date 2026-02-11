@@ -102,5 +102,87 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
+
+        <!-- User Search Results (shown when searching) -->
+        <Border x:Name="UserSearchPanel"
+                Grid.Row="1"
+                Visibility="Collapsed"
+                Padding="4">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <TextBlock x:Name="UserSearchTitle"
+                           Grid.Row="0"
+                           Text="Kullanicilar"
+                           FontSize="13"
+                           FontWeight="SemiBold"
+                           Foreground="{DynamicResource TextSecondaryBrush}"
+                           Margin="12,8,12,4"/>
+                <ListBox x:Name="UserSearchList"
+                         Grid.Row="1"
+                         Background="Transparent"
+                         BorderThickness="0"
+                         ItemContainerStyle="{StaticResource ContactListItem}"
+                         SelectionChanged="UserSearchList_SelectionChanged">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="0,4">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid Grid.Column="0" Margin="0,0,12,0">
+                                    <Ellipse Width="36" Height="36"
+                                             Fill="{DynamicResource AccentBrushLight2}"/>
+                                    <TextBlock Text="{Binding Initials}"
+                                               FontSize="13"
+                                               FontWeight="SemiBold"
+                                               Foreground="{DynamicResource AccentBrushDark1}"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"/>
+                                </Grid>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding DisplayName}"
+                                               FontSize="14"
+                                               FontWeight="SemiBold"
+                                               Foreground="{DynamicResource TextPrimaryBrush}"
+                                               TextTrimming="CharacterEllipsis"/>
+                                    <TextBlock Text="{Binding Detail}"
+                                               FontSize="12"
+                                               Foreground="{DynamicResource TextTertiaryBrush}"
+                                               TextTrimming="CharacterEllipsis"
+                                               Margin="0,1,0,0"/>
+                                </StackPanel>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Grid>
+        </Border>
+
+        <!-- Empty State -->
+        <StackPanel x:Name="EmptyState"
+                    Grid.Row="1"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center"
+                    Visibility="Collapsed">
+            <TextBlock Text="&#xE8BD;"
+                       FontFamily="Segoe MDL2 Assets"
+                       FontSize="36"
+                       Foreground="{DynamicResource TextTertiaryBrush}"
+                       HorizontalAlignment="Center"/>
+            <TextBlock Text="Henuz sohbet yok"
+                       FontSize="14"
+                       Foreground="{DynamicResource TextSecondaryBrush}"
+                       HorizontalAlignment="Center"
+                       Margin="0,8,0,0"/>
+            <TextBlock Text="Arama yaparak yeni bir sohbet baslatin"
+                       FontSize="12"
+                       Foreground="{DynamicResource TextTertiaryBrush}"
+                       HorizontalAlignment="Center"
+                       Margin="0,4,0,0"/>
+        </StackPanel>
     </Grid>
 </Page>

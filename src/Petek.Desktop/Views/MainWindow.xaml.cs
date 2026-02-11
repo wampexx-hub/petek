@@ -12,6 +12,7 @@ namespace Petek.Desktop.Views;
 public partial class MainWindow : Window
 {
     private Page? _currentListPage;
+    private ChatView? _chatView;
     private UserStatus _currentStatus = UserStatus.Available;
 
     public MainWindow()
@@ -26,6 +27,7 @@ public partial class MainWindow : Window
         UpdateProfileInitial();
         LoadCurrentStatus();
         SubscribeToNotifications();
+        SetupDesktopNotifications();
     }
 
     #region Status Change
@@ -126,7 +128,46 @@ public partial class MainWindow : Window
                 {
                     ShowToast(title, message, ToastType.Info);
                 });
+
+                // Masaustu bildirimi de goster
+                try
+                {
+                    var notificationService = App.Services.GetRequiredService<INotificationService>();
+                    notificationService.ShowNotification(title, message);
+                }
+                catch { }
             };
+
+            // Yeni mesaj geldiginde masaustu bildirimi goster
+            signalR.MessageReceived += (messageDto) =>
+            {
+                try
+                {
+                    var authService = App.Services.GetRequiredService<IAuthenticationService>();
+                    // Kendi mesajlarimiz icin bildirim gosterme
+                    if (authService.CurrentUser != null && messageDto.SenderId == authService.CurrentUser.Id)
+                        return;
+
+                    var notificationService = App.Services.GetRequiredService<INotificationService>();
+                    var senderName = !string.IsNullOrEmpty(messageDto.SenderName) ? messageDto.SenderName : "Bilinmeyen";
+                    notificationService.ShowMessageNotification(
+                        senderName,
+                        messageDto.Content ?? "",
+                        messageDto.Type,
+                        messageDto.ConversationId);
+                }
+                catch { }
+            };
+        }
+        catch { }
+    }
+
+    private void SetupDesktopNotifications()
+    {
+        try
+        {
+            var notificationService = App.Services.GetRequiredService<INotificationService>();
+            notificationService.SetupSystemTray(this);
         }
         catch { }
     }
@@ -358,8 +399,41 @@ public partial class MainWindow : Window
         var page = new ConversationListView();
         _currentListPage = page;
         ListFrame.Navigate(page);
-        ContentFrame.Navigate(new ChatView());
+        _chatView ??= new ChatView();
+        ContentFrame.Navigate(_chatView);
         if (SearchBox != null) SearchBox.Text = "";
+    }
+
+    /// <summary>
+    /// Sohbet sekmesine gecip belirli bir konusmayi acar.
+    /// ConversationListView ve ContactListView tarafindan cagirilir.
+    /// </summary>
+    public void OpenConversation(Guid conversationId)
+    {
+        if (ListFrame == null || ContentFrame == null) return;
+
+        // Sohbet sekmesine gec
+        NavChat.IsChecked = true;
+        var page = new ConversationListView();
+        _currentListPage = page;
+        ListFrame.Navigate(page);
+
+        // ChatView'i yukle
+        _chatView ??= new ChatView();
+        ContentFrame.Navigate(_chatView);
+        _chatView.LoadConversation(conversationId);
+
+        if (SearchBox != null) SearchBox.Text = "";
+    }
+
+    /// <summary>
+    /// Kisi detayini ContentFrame'de gosterir.
+    /// </summary>
+    public void ShowContactDetail(ContactItemViewModel contact)
+    {
+        if (ContentFrame == null) return;
+        var detailView = new ContactDetailView(contact);
+        ContentFrame.Navigate(detailView);
     }
 
     private void NavigateToContacts()

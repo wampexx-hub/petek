@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using Petek.Desktop.Services;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Petek.Desktop.Views;
 
@@ -48,6 +49,16 @@ public partial class SettingsView : Page
             ServerUrlBox.Text = "http://localhost:5000";
 
         ServerUrlStatus.Text = "Değişiklik uygulanması için uygulamayı yeniden başlatmanız gerekir.";
+
+        // Bildirim ayarlarini yukle
+        try
+        {
+            var notificationService = App.Services.GetRequiredService<INotificationService>();
+            NotificationsCheckBox.IsChecked = notificationService.IsEnabled;
+            SoundsCheckBox.IsChecked = notificationService.SoundEnabled;
+            MinimizeToTrayCheckBox.IsChecked = notificationService.ShowInTaskbar;
+        }
+        catch { }
 
         _isInitializing = false;
     }
@@ -112,6 +123,39 @@ public partial class SettingsView : Page
         SaveSetting("ServerUrl", url);
         ServerUrlStatus.Text = "Kaydedildi. Değişikliğin uygulanması için uygulamayı yeniden başlatın.";
         ServerUrlStatus.Foreground = (System.Windows.Media.Brush)FindResource("StatusAvailableBrush");
+    }
+
+    private void NotificationsCheckBox_Changed(object sender, RoutedEventArgs e)
+    {
+        if (_isInitializing) return;
+        try
+        {
+            var notificationService = App.Services.GetRequiredService<INotificationService>();
+            notificationService.IsEnabled = NotificationsCheckBox.IsChecked == true;
+        }
+        catch { }
+    }
+
+    private void SoundsCheckBox_Changed(object sender, RoutedEventArgs e)
+    {
+        if (_isInitializing) return;
+        try
+        {
+            var notificationService = App.Services.GetRequiredService<INotificationService>();
+            notificationService.SoundEnabled = SoundsCheckBox.IsChecked == true;
+        }
+        catch { }
+    }
+
+    private void MinimizeToTrayCheckBox_Changed(object sender, RoutedEventArgs e)
+    {
+        if (_isInitializing) return;
+        try
+        {
+            var notificationService = App.Services.GetRequiredService<INotificationService>();
+            notificationService.ShowInTaskbar = MinimizeToTrayCheckBox.IsChecked == true;
+        }
+        catch { }
     }
 
     private static Dictionary<string, string> LoadSettings()

@@ -408,12 +408,13 @@ public class AdminController : ControllerBase
     {
         try
         {
-            if (dto.TargetAll)
+            if (string.IsNullOrWhiteSpace(dto.Title) || string.IsNullOrWhiteSpace(dto.Message))
             {
-                // Tüm bağlı kullanıcılara gönder
-                await _hubContext.Clients.All.ReceiveNotification(dto.Title, dto.Message);
+                return BadRequest(ApiResponse<bool>.Fail("Baslik ve mesaj zorunludur"));
             }
-            else if (dto.UserIds != null && dto.UserIds.Count > 0)
+
+            string target;
+            if (dto.UserIds != null && dto.UserIds.Count > 0)
             {
                 // Belirli kullanıcılara gönder
                 foreach (var userId in dto.UserIds)
@@ -421,10 +422,18 @@ public class AdminController : ControllerBase
                     await _hubContext.Clients.Group(SignalRConstants.Groups.User(userId))
                         .ReceiveNotification(dto.Title, dto.Message);
                 }
+                target = string.Join(",", dto.UserIds);
+            }
+            else
+            {
+                // Tum bagli (cevrimici) kullanıcılara gönder
+                // SignalR Clients.All zaten sadece bagli istemcilere gonderir
+                await _hubContext.Clients.All.ReceiveNotification(dto.Title, dto.Message);
+                target = "All";
             }
 
             await LogAction("SendNotification", "Notification", null,
-                $"To: {(dto.TargetAll ? "All" : string.Join(",", dto.UserIds ?? []))} Message: {dto.Title}");
+                $"To: {target} Message: {dto.Title}");
 
             return Ok(ApiResponse<bool>.Ok(true, "Bildirim gonderildi"));
         }

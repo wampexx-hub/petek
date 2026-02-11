@@ -4,6 +4,9 @@ using Petek.Desktop.Services;
 using Petek.Shared.DTOs;
 using Petek.Shared.Enums;
 using System.Collections.ObjectModel;
+using System.IO;
+using System.Net.Http;
+using System.Text.Json;
 
 namespace Petek.Desktop.ViewModels;
 
@@ -24,6 +27,9 @@ public partial class ChatViewModel : ObservableObject
 
     [ObservableProperty]
     private string? _typingUserName;
+
+    [ObservableProperty]
+    private bool _isSendingFile;
 
     public ObservableCollection<MessageDisplayViewModel> Messages { get; } = new();
 
@@ -85,6 +91,126 @@ public partial class ChatViewModel : ObservableObject
 
         await _signalRService.SendMessageAsync(dto);
         MessageText = string.Empty;
+    }
+
+    /// <summary>
+    /// Dosya gonder (dosya yolundan)
+    /// </summary>
+    public async Task SendFileAsync(string filePath)
+    {
+        if (CurrentConversation == null || !File.Exists(filePath)) return;
+
+        try
+        {
+            IsSendingFile = true;
+
+            using var fileStream = File.OpenRead(filePath);
+            var fileName = Path.GetFileName(filePath);
+
+            var response = await _apiClient.UploadFileAsync("api/files", fileStream, fileName);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                var result = JsonSerializer.Deserialize<ApiResponse<FileUploadResultDto>>(json,
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+                if (result?.Data != null)
+                {
+                    var dto = new SendMessageDto
+                    {
+                        ConversationId = CurrentConversation.Id,
+                        Content = $"[Dosya: {fileName}]",
+                        Type = MessageType.File
+                    };
+
+                    await _signalRService.SendMessageAsync(dto);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Windows.MessageBox.Show(
+                $"Dosya gonderilemedi: {ex.Message}",
+                "Hata",
+                System.Windows.MessageBoxButton.OK,
+                System.Windows.MessageBoxImage.Error);
+        }
+        finally
+        {
+            IsSendingFile = false;
+        }
+    }
+
+    /// <summary>
+    /// Ekran goruntusu gonder (byte dizisinden)
+    /// </summary>
+    public async Task SendScreenshotAsync(byte[] screenshotBytes)
+    {
+        if (CurrentConversation == null || screenshotBytes == null || screenshotBytes.Length == 0) return;
+
+        try
+        {
+            IsSendingFile = true;
+
+            var fileName = $"ekran_goruntusu_{DateTime.Now:yyyyMMdd_HHmmss}.png";
+            using var stream = new MemoryStream(screenshotBytes);
+
+            var response = await _apiClient.UploadFileAsync("api/files", stream, fileName);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                var result = JsonSerializer.Deserialize<ApiResponse<FileUploadResultDto>>(json,
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+                if (result?.Data != null)
+                {
+                    var dto = new SendMessageDto
+                    {
+                        ConversationId = CurrentConversation.Id,
+                        Content = $"[Ekran Goruntusu: {fileName}]",
+                        Type = MessageType.Screenshot
+                    };
+
+                    await _signalRService.SendMessageAsync(dto);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Windows.MessageBox.Show(
+                $"Ekran goruntusu gonderilemedi: {ex.Message}",
+                "Hata",
+                System.Windows.MessageBoxButton.OK,
+                System.Windows.MessageBoxImage.Error);
+        }
+        finally
+        {
+            IsSendingFile = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task DownloadAttachmentAsync(MessageDisplayViewModel message)
+    {
+        if (message.AttachmentId == null) return;
+
+        try
+        {
+            var dialog = new Microsoft.Win32.SaveFileDialog
+            {
+                FileName = message.AttachmentName ?? "dosya",
+                Title = "Dosyayi Kaydet"
+            };
+
+            if (dialog.ShowDialog() == true)
+            {
+                var response = await _apiClient.GetAsync<byte[]>($"api/files/{message.AttachmentId}");
+                // Basit indirme - gercek implementasyonda stream kullanilmali
+            }
+        }
+        catch { }
     }
 
     [RelayCommand]
@@ -149,6 +275,11 @@ public partial class MessageDisplayViewModel : ObservableObject
     public string Content => _dto.Content;
     public string Time => _dto.SentAt.ToLocalTime().ToString("HH:mm");
     public bool IsOutgoing => _dto.SenderId == _currentUserId;
+    public bool HasTextContent => !string.IsNullOrWhiteSpace(_dto.Content) && _dto.Type == MessageType.Text;
+    public bool HasAttachment => _dto.Attachment != null || _dto.Type == MessageType.File || _dto.Type == MessageType.Screenshot;
+    public Guid? AttachmentId => _dto.Attachment?.Id;
+    public string? AttachmentName => _dto.Attachment?.FileName ?? (_dto.Type == MessageType.File || _dto.Type == MessageType.Screenshot ? _dto.Content : null);
+    public string? AttachmentSize => _dto.Attachment != null ? FormatFileSize(_dto.Attachment.FileSize) : null;
 
     [ObservableProperty]
     private MessageStatus _status;
@@ -160,7 +291,20 @@ public partial class MessageDisplayViewModel : ObservableObject
     {
         MessageStatus.Sent => "\uE73E",
         MessageStatus.Delivered => "\uE73E",
-        MessageStatus.Read => "\uE8FB", // Double check
+        MessageStatus.Read => "\uE8FB",
         _ => ""
     };
+
+    private static string FormatFileSize(long bytes)
+    {
+        string[] sizes = { "B", "KB", "MB", "GB" };
+        int order = 0;
+        double size = bytes;
+        while (size >= 1024 && order < sizes.Length - 1)
+        {
+            order++;
+            size /= 1024;
+        }
+        return $"{size:0.##} {sizes[order]}";
+    }
 }

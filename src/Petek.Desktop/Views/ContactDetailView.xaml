@@ -8,7 +8,8 @@
 
     <Grid>
         <!-- Empty State -->
-        <StackPanel VerticalAlignment="Center"
+        <StackPanel x:Name="EmptyState"
+                    VerticalAlignment="Center"
                     HorizontalAlignment="Center"
                     Visibility="Visible">
             <TextBlock Text="&#xE77B;"
@@ -26,6 +27,86 @@
                        Foreground="{DynamicResource TextTertiaryBrush}"
                        HorizontalAlignment="Center"
                        Margin="0,8,0,0"/>
+        </StackPanel>
+
+        <!-- Contact Detail -->
+        <StackPanel x:Name="ContactDetail"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center"
+                    Visibility="Collapsed"
+                    MaxWidth="400">
+
+            <!-- Avatar -->
+            <Grid HorizontalAlignment="Center" Margin="0,0,0,20">
+                <Ellipse Width="80" Height="80"
+                         Fill="{DynamicResource AccentBrushLight2}"/>
+                <TextBlock x:Name="ContactInitial"
+                           Text="?"
+                           FontSize="32"
+                           FontWeight="SemiBold"
+                           Foreground="{DynamicResource AccentBrushDark1}"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"/>
+                <Ellipse x:Name="StatusDot"
+                         Width="16" Height="16"
+                         HorizontalAlignment="Right"
+                         VerticalAlignment="Bottom"
+                         Margin="0,0,4,4"
+                         Stroke="{DynamicResource BackgroundBrush}"
+                         StrokeThickness="2"/>
+            </Grid>
+
+            <!-- Name -->
+            <TextBlock x:Name="ContactName"
+                       Text=""
+                       FontSize="24"
+                       FontWeight="SemiBold"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       HorizontalAlignment="Center"
+                       Margin="0,0,0,4"/>
+
+            <!-- Status -->
+            <TextBlock x:Name="ContactStatus"
+                       Text=""
+                       FontSize="14"
+                       Foreground="{DynamicResource TextSecondaryBrush}"
+                       HorizontalAlignment="Center"
+                       Margin="0,0,0,4"/>
+
+            <!-- Title -->
+            <TextBlock x:Name="ContactTitle"
+                       Text=""
+                       FontSize="13"
+                       Foreground="{DynamicResource TextTertiaryBrush}"
+                       HorizontalAlignment="Center"
+                       Margin="0,0,0,2"/>
+
+            <!-- Department -->
+            <TextBlock x:Name="ContactDepartment"
+                       Text=""
+                       FontSize="13"
+                       Foreground="{DynamicResource TextTertiaryBrush}"
+                       HorizontalAlignment="Center"
+                       Margin="0,0,0,24"/>
+
+            <!-- Action Buttons -->
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Center">
+                <Button Style="{StaticResource AccentButton}"
+                        Padding="24,10"
+                        Click="StartConversation_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE8BD;"
+                                   FontFamily="Segoe MDL2 Assets"
+                                   FontSize="16"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,8,0"/>
+                        <TextBlock Text="Mesaj Gönder"
+                                   FontSize="14"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
         </StackPanel>
     </Grid>
 </Page>

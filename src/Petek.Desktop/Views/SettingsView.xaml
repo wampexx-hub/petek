@@ -141,8 +141,11 @@
                                        Foreground="{DynamicResource TextSecondaryBrush}"/>
                         </StackPanel>
                         <CheckBox Grid.Column="1"
+                                  x:Name="NotificationsCheckBox"
                                   IsChecked="True"
-                                  VerticalAlignment="Center"/>
+                                  VerticalAlignment="Center"
+                                  Checked="NotificationsCheckBox_Changed"
+                                  Unchecked="NotificationsCheckBox_Changed"/>
                     </Grid>
 
                     <!-- Sound -->
@@ -159,8 +162,32 @@
                                        Foreground="{DynamicResource TextSecondaryBrush}"/>
                         </StackPanel>
                         <CheckBox Grid.Column="1"
+                                  x:Name="SoundsCheckBox"
                                   IsChecked="True"
-                                  VerticalAlignment="Center"/>
+                                  VerticalAlignment="Center"
+                                  Checked="SoundsCheckBox_Changed"
+                                  Unchecked="SoundsCheckBox_Changed"/>
+                    </Grid>
+
+                    <!-- Minimize to Tray -->
+                    <Grid Margin="0,0,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Text="Sistem Tepsisine Küçült"
+                                       Foreground="{DynamicResource TextPrimaryBrush}"/>
+                            <TextBlock Text="Kapatıldığında arka planda çalışmaya devam et"
+                                       FontSize="12"
+                                       Foreground="{DynamicResource TextSecondaryBrush}"/>
+                        </StackPanel>
+                        <CheckBox Grid.Column="1"
+                                  x:Name="MinimizeToTrayCheckBox"
+                                  IsChecked="True"
+                                  VerticalAlignment="Center"
+                                  Checked="MinimizeToTrayCheckBox_Changed"
+                                  Unchecked="MinimizeToTrayCheckBox_Changed"/>
                     </Grid>
                 </StackPanel>
             </Border>
