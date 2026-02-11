@@ -5,7 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         Title="Petek Messenger - Giriş"
-        Height="680" Width="420"
+        SizeToContent="Height"
+        MinHeight="680" MaxHeight="820"
+        Width="420"
         WindowStartupLocation="CenterScreen"
         WindowStyle="None"
         AllowsTransparency="True"
@@ -16,6 +18,7 @@
         <Border.Effect>
             <DropShadowEffect BlurRadius="25" Opacity="0.15" ShadowDepth="5" Color="#000000"/>
         </Border.Effect>
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
         <Grid Margin="36,28,36,24">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -229,26 +232,19 @@
                     <StackPanel>
                         <TextBlock Text="Sunucu Adresi" FontSize="11" FontWeight="SemiBold"
                                    Foreground="{DynamicResource TextSecondaryBrush}" Margin="2,0,0,4"/>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBox x:Name="ServerUrlBox"
-                                     Style="{StaticResource FluentTextBox}"
-                                     Tag="http://sunucu-adresi:5000"
-                                     Height="34"
-                                     FontSize="12"
-                                     Grid.Column="0"/>
-                            <Button Grid.Column="1"
-                                    Style="{StaticResource AccentButton}"
-                                    Content="Uygula"
-                                    Padding="14,6"
-                                    Margin="6,0,0,0"
-                                    FontSize="12"
-                                    Height="34"
-                                    Click="ApplyServerUrl_Click"/>
-                        </Grid>
+                        <TextBox x:Name="ServerUrlBox"
+                                 Style="{StaticResource FluentTextBox}"
+                                 Tag="http://sunucu-adresi:5000"
+                                 Height="34"
+                                 FontSize="11"/>
+                        <Button Style="{StaticResource AccentButton}"
+                                Content="Uygula"
+                                HorizontalAlignment="Right"
+                                Padding="18,5"
+                                Margin="0,6,0,0"
+                                FontSize="11"
+                                Height="30"
+                                Click="ApplyServerUrl_Click"/>
                         <TextBlock x:Name="ServerUrlStatus"
                                    Text=""
                                    FontSize="10"
@@ -314,5 +310,6 @@
                 </StackPanel>
             </Grid>
         </Grid>
+        </ScrollViewer>
     </Border>
 </Window>

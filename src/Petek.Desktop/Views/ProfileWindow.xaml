@@ -122,8 +122,15 @@
                 </StackPanel>
             </Border>
 
+            <!-- Save Button -->
+            <Button Content="Kaydet"
+                    Style="{StaticResource AccentButton}"
+                    HorizontalAlignment="Stretch"
+                    Click="Save_Click"
+                    Margin="0,0,0,8"/>
+
             <!-- Logout Button -->
-            <Button Content="Çıkış Yap"
+            <Button Content="Cikis Yap"
                     Style="{StaticResource FluentButton}"
                     HorizontalAlignment="Stretch"
                     Click="Logout_Click"
