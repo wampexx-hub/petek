@@ -1,6 +1,45 @@
 # Petek Messenger Sunucu Kurulum Rehberi
 
-Bu doküman, Petek Messenger sunucusunun kurulumu, yapılandırılması ve production ortamına deploy edilmesi için gerekli adımları içerir.
+Bu dokuman, Petek Messenger sunucusunun kurulumu, yapilandirilmasi ve production ortamina deploy edilmesi icin gerekli adimlari icerir.
+
+## Hizli Kurulum (Windows Server)
+
+### Yontem 1: Interaktif PowerShell Scripti (Onerilen)
+
+En kolay kurulum yontemi. Script gerekli bilgileri sorar ve otomatik yapilandirir.
+
+```powershell
+# Yonetici olarak PowerShell acin
+# Proje dizinine gidin ve scripti calistirin:
+.\installer\Install-PetekServer.ps1
+```
+
+Script size soracaklari:
+1. Kurulum dizini (varsayilan: C:\PetekServer)
+2. Sunucu portu (varsayilan: 5000)
+3. SSL/HTTPS ayarlari
+4. Veritabani secimi (SQLite veya PostgreSQL)
+5. Yonetici kullanici adi ve sifresi
+6. Windows Auth ve Firewall ayarlari
+7. Windows Servisi olarak kurulum
+
+Kurulum tamamlandiginda, baska PC'lerden baglanmak icin gereken tum bilgiler ekranda gosterilir ve `CONNECTION_INFO.txt` dosyasina kaydedilir.
+
+### Yontem 2: Inno Setup Installer
+
+1. Projeyi derleyin:
+```powershell
+dotnet publish src\Petek.Server\Petek.Server.csproj -c Release -o publish\server
+```
+
+2. `installer\ServerSetup.iss` dosyasini Inno Setup Compiler ile acin ve derleyin
+3. Olusturulan `PetekServerSetup.exe` dosyasini sunucuda calistirin
+4. Wizard sirasinda port, admin bilgileri ve diger ayarlarini girin
+5. Kurulum tamamlandiginda baglanti bilgileri otomatik gosterilir
+
+### Yontem 3: Manuel Kurulum
+
+Asagidaki adimlari takip edin.
 
 ## Sistem Gereksinimleri
 
@@ -447,6 +486,48 @@ journalctl -u Petek-server -f
 - [ ] Health monitoring kuruldu
 - [ ] appsettings.Production.json güvenli şekilde yapılandırıldı
 
+## Istemci (Desktop) Baglanti Ayarlari
+
+Sunucu kurulduktan sonra, baska bilgisayarlardan baglanmak icin:
+
+1. Petek Desktop uygulamasini kurun
+2. Giris ekraninda sunucu adresini girin:
+   - Ornek: `http://192.168.1.100:5000`
+   - veya: `http://sunucu-adi:5000`
+3. Kullanici adi ve sifre ile giris yapin
+
+### Baglanti adresi nasil bulunur?
+
+Sunucu baslatildiginda konsolda (veya `CONNECTION_INFO.txt` dosyasinda) su bilgiler gosterilir:
+
+```
+SUNUCU BAGLANTI BILGILERI
+========================================
+  Istemciler asagidaki adreslerden baglanabilir:
+    http://192.168.1.100:5000
+      (Ethernet - Intel I219-LM)
+    http://SUNUCU-ADI:5000
+```
+
+### Sunucu Yonetimi (Windows)
+
+```powershell
+# Servisi baslat
+net start PetekServer
+
+# Servisi durdur
+net stop PetekServer
+
+# Servis durumunu kontrol et
+sc query PetekServer
+
+# Sunucu saglik kontrolu (tarayicidan veya PowerShell ile)
+Invoke-WebRequest http://localhost:5000/health
+
+# Sunucu bilgilerini al
+Invoke-WebRequest http://localhost:5000/api/server/info
+```
+
 ## Destek
 
-Teknik destek için sistem yöneticinizle iletişime geçin.
+Teknik destek icin sistem yoneticinizle iletisime gecin.

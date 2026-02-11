@@ -75,11 +75,14 @@
             </Grid>
         </Border>
 
-        <!-- Messages Area -->
+        <!-- Messages Area - Drag-and-drop destegi -->
         <ScrollViewer x:Name="MessagesScrollViewer"
                       Grid.Row="1"
                       VerticalScrollBarVisibility="Auto"
-                      Padding="16">
+                      Padding="16"
+                      AllowDrop="True"
+                      Drop="MessagesArea_Drop"
+                      DragOver="MessagesArea_DragOver">
             <ItemsControl x:Name="MessagesList">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
@@ -88,10 +91,37 @@
                             <Border Style="{StaticResource ChatBubbleIncoming}"
                                     Visibility="{Binding IsIncomingVisibility}">
                                 <StackPanel>
+                                    <!-- Dosya eki gosterimi -->
+                                    <Border Visibility="{Binding HasAttachment, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                            Background="{DynamicResource SurfaceBrush}"
+                                            CornerRadius="6"
+                                            Padding="10,8"
+                                            Margin="0,0,0,6"
+                                            Cursor="Hand"
+                                            MouseLeftButtonUp="Attachment_Click">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="&#xE8A5;"
+                                                       FontFamily="Segoe MDL2 Assets"
+                                                       FontSize="20"
+                                                       Foreground="{DynamicResource AccentBrush}"
+                                                       VerticalAlignment="Center"
+                                                       Margin="0,0,8,0"/>
+                                            <StackPanel>
+                                                <TextBlock Text="{Binding AttachmentName}"
+                                                           FontSize="13"
+                                                           FontWeight="SemiBold"
+                                                           Foreground="{DynamicResource TextPrimaryBrush}"/>
+                                                <TextBlock Text="{Binding AttachmentSize}"
+                                                           FontSize="11"
+                                                           Foreground="{DynamicResource TextTertiaryBrush}"/>
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </Border>
                                     <TextBlock Text="{Binding Content}"
                                                FontSize="14"
                                                Foreground="{DynamicResource TextPrimaryBrush}"
-                                               TextWrapping="Wrap"/>
+                                               TextWrapping="Wrap"
+                                               Visibility="{Binding HasTextContent, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                                     <TextBlock Text="{Binding Time}"
                                                FontSize="10"
                                                Foreground="{DynamicResource TextTertiaryBrush}"
@@ -104,10 +134,37 @@
                             <Border Style="{StaticResource ChatBubbleOutgoing}"
                                     Visibility="{Binding IsOutgoingVisibility}">
                                 <StackPanel>
+                                    <!-- Dosya eki gosterimi -->
+                                    <Border Visibility="{Binding HasAttachment, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                            Background="#1AFFFFFF"
+                                            CornerRadius="6"
+                                            Padding="10,8"
+                                            Margin="0,0,0,6"
+                                            Cursor="Hand"
+                                            MouseLeftButtonUp="Attachment_Click">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="&#xE8A5;"
+                                                       FontFamily="Segoe MDL2 Assets"
+                                                       FontSize="20"
+                                                       Foreground="#E0FFFFFF"
+                                                       VerticalAlignment="Center"
+                                                       Margin="0,0,8,0"/>
+                                            <StackPanel>
+                                                <TextBlock Text="{Binding AttachmentName}"
+                                                           FontSize="13"
+                                                           FontWeight="SemiBold"
+                                                           Foreground="White"/>
+                                                <TextBlock Text="{Binding AttachmentSize}"
+                                                           FontSize="11"
+                                                           Foreground="#B3FFFFFF"/>
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </Border>
                                     <TextBlock Text="{Binding Content}"
                                                FontSize="14"
                                                Foreground="White"
-                                               TextWrapping="Wrap"/>
+                                               TextWrapping="Wrap"
+                                               Visibility="{Binding HasTextContent, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                                     <StackPanel Orientation="Horizontal"
                                                 HorizontalAlignment="Right"
                                                 Margin="0,4,0,0">
@@ -127,6 +184,27 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </ScrollViewer>
+
+        <!-- Drag-and-drop overlay -->
+        <Border x:Name="DragDropOverlay"
+                Grid.Row="1"
+                Background="#CC000000"
+                Visibility="Collapsed"
+                IsHitTestVisible="False">
+            <StackPanel VerticalAlignment="Center"
+                        HorizontalAlignment="Center">
+                <TextBlock Text="&#xE8A5;"
+                           FontFamily="Segoe MDL2 Assets"
+                           FontSize="48"
+                           Foreground="White"
+                           HorizontalAlignment="Center"/>
+                <TextBlock Text="Dosyayi buraya birakin"
+                           FontSize="18"
+                           Foreground="White"
+                           Margin="0,12,0,0"
+                           HorizontalAlignment="Center"/>
+            </StackPanel>
+        </Border>
 
         <!-- Typing Indicator -->
         <Border x:Name="TypingIndicator"
