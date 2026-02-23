@@ -99,27 +99,27 @@ public partial class ChatView : Page
         }
     }
 
-    private void MessagesArea_DragOver(object sender, DragEventArgs e)
+    private void MessagesArea_DragOver(object sender, System.Windows.DragEventArgs e)
     {
-        if (e.Data.GetDataPresent(DataFormats.FileDrop))
+        if (e.Data.GetDataPresent(System.Windows.DataFormats.FileDrop))
         {
-            e.Effects = DragDropEffects.Copy;
+            e.Effects = System.Windows.DragDropEffects.Copy;
             DragDropOverlay.Visibility = Visibility.Visible;
         }
         else
         {
-            e.Effects = DragDropEffects.None;
+            e.Effects = System.Windows.DragDropEffects.None;
         }
         e.Handled = true;
     }
 
-    private async void MessagesArea_Drop(object sender, DragEventArgs e)
+    private async void MessagesArea_Drop(object sender, System.Windows.DragEventArgs e)
     {
         DragDropOverlay.Visibility = Visibility.Collapsed;
 
-        if (!e.Data.GetDataPresent(DataFormats.FileDrop)) return;
+        if (!e.Data.GetDataPresent(System.Windows.DataFormats.FileDrop)) return;
 
-        var files = (string[])e.Data.GetData(DataFormats.FileDrop);
+        var files = (string[])e.Data.GetData(System.Windows.DataFormats.FileDrop);
         if (files == null || files.Length == 0) return;
 
         foreach (var filePath in files)

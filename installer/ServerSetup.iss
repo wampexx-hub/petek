@@ -1,4 +1,4 @@
-; Petek Server Installer - Interaktif Yapilandirma ile
+; Petek Server Installer - Interaktif Yapılandırma ile
 
 #define MyAppName "Petek Server"
 #define MyAppVersion "1.1.0"
@@ -31,14 +31,14 @@ Name: "turkish"; MessagesFile: "compiler:Languages\Turkish.isl"
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [CustomMessages]
-turkish.ServerConfig=Sunucu Yapilandirmasi
-turkish.ServerConfigDesc=Sunucu baglanti ayarlarini yapilandirin
+turkish.ServerConfig=Sunucu Yapılandırması
+turkish.ServerConfigDesc=Sunucu bağlantı ayarlarını yapılandırın
 turkish.ServerPort=Sunucu Portu:
-turkish.AdminUser=Yonetici Kullanici Adi:
-turkish.AdminPass=Yonetici Sifresi:
-turkish.DatabaseType=Veritabani Turu:
+turkish.AdminUser=Yönetici Kullanıcı Adı:
+turkish.AdminPass=Yönetici Şifresi:
+turkish.DatabaseType=Veritabanı Türü:
 turkish.InstallService=Windows Servisi olarak kur
-turkish.OpenFirewall=Firewall'da portu ac
+turkish.OpenFirewall=Firewall'da portu aç
 english.ServerConfig=Server Configuration
 english.ServerConfigDesc=Configure server connection settings
 english.ServerPort=Server Port:
@@ -49,13 +49,12 @@ english.InstallService=Install as Windows Service
 english.OpenFirewall=Open port in firewall
 
 [Tasks]
-Name: "firewall"; Description: "{cm:OpenFirewall}"; GroupDescription: "Ag ayarlari:"; Flags: checkedonce
-Name: "service"; Description: "{cm:InstallService}"; GroupDescription: "Servis ayarlari:"; Flags: checkedonce
+Name: "firewall"; Description: "{cm:OpenFirewall}"; GroupDescription: "Ağ ayarları:"; Flags: checkedonce
+Name: "service"; Description: "{cm:InstallService}"; GroupDescription: "Servis ayarları:"; Flags: checkedonce
 
 [Files]
-Source: "..\publish\server\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\publish\server\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "Install-PetekServer.ps1"; DestDir: "{app}\tools"; Flags: ignoreversion
+Source: "..\publish\server_full\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\publish\server_full\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Dirs]
 Name: "{app}\uploads"; Permissions: users-modify
@@ -66,16 +65,16 @@ Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
 Name: "{autoprograms}\Petek Admin Panel"; Filename: "http://localhost:{code:GetPort}/admin"
 
 [Run]
-; Firewall kurali
+; Firewall kuralı
 Filename: "netsh"; Parameters: "advfirewall firewall add rule name=""Petek Server"" dir=in action=allow protocol=tcp localport={code:GetPort}"; Flags: runhidden; Tasks: firewall
-; Windows Service olustur
+; Windows Service oluştur
 Filename: "sc.exe"; Parameters: "create PetekServer binPath= ""{app}\{#MyAppExeName}"" start= auto DisplayName= ""Petek Messenger Server"""; Flags: runhidden; Tasks: service
-Filename: "sc.exe"; Parameters: "description PetekServer ""Petek Messenger - Kurumsal mesajlasma sunucusu"""; Flags: runhidden; Tasks: service
-; Servisi baslat
+Filename: "sc.exe"; Parameters: "description PetekServer ""Petek Messenger - Kurumsal mesajlaşma sunucusu"""; Flags: runhidden; Tasks: service
+; Servisi başlat
 Filename: "net"; Parameters: "start PetekServer"; Flags: runhidden; Tasks: service
-; Servis olmadan baslat
+; Servis olmadan başlat
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,Petek Server}"; Flags: nowait postinstall skipifsilent; Tasks: not service
-; Baglanti bilgilerini goster
+; Bağlantı bilgilerini göster
 Filename: "notepad.exe"; Parameters: "{app}\CONNECTION_INFO.txt"; Flags: nowait postinstall skipifsilent shellexec
 
 [UninstallRun]
@@ -91,19 +90,19 @@ var
 
 procedure InitializeWizard;
 begin
-  // Sunucu yapilandirma sayfasi
+  // Sunucu yapılandırma sayfası
   ConfigPage := CreateInputQueryPage(wpSelectTasks,
     ExpandConstant('{cm:ServerConfig}'),
     ExpandConstant('{cm:ServerConfigDesc}'),
-    'Asagidaki ayarlari yapilandirin:');
+    'Aşağıdaki ayarları yapılandırın:');
   ConfigPage.Add(ExpandConstant('{cm:ServerPort}'), False);
   ConfigPage.Values[0] := '5000';
 
-  // Admin hesabi sayfasi
+  // Admin hesabı sayfası
   AdminPage := CreateInputQueryPage(ConfigPage.ID,
-    'Yonetici Hesabi',
-    'Ilk yonetici hesabini olusturun',
-    'Bu bilgiler sunucuya ilk giris icin kullanilacaktir:');
+    'Yönetici Hesabı',
+    'İlk yönetici hesabını oluşturun',
+    'Bu bilgiler sunucuya ilk giriş için kullanılacaktır:');
   AdminPage.Add(ExpandConstant('{cm:AdminUser}'), False);
   AdminPage.Add(ExpandConstant('{cm:AdminPass}'), True);
   AdminPage.Values[0] := 'admin';
@@ -132,6 +131,7 @@ end;
 function GetLocalIP: String;
 var
   WbemLocator, WbemServices, WbemObjectSet, WbemObject: Variant;
+  IPs: Variant;
   i: Integer;
 begin
   Result := '127.0.0.1';
@@ -145,7 +145,8 @@ begin
       WbemObject := WbemObjectSet.ItemIndex(i);
       if not VarIsNull(WbemObject.IPAddress) then
       begin
-        Result := VarArrayGet(WbemObject.IPAddress, [0]);
+        IPs := WbemObject.IPAddress;
+        Result := IPs[0];
         if (Result <> '') and (Result <> '127.0.0.1') then
           Break;
       end;
@@ -165,7 +166,7 @@ begin
   AdminPass := GetAdminPass;
   IP := GetLocalIP;
 
-  // appsettings.json olustur
+  // appsettings.json oluştur
   SetArrayLength(ConfigLines, 35);
   ConfigLines[0] := '{';
   ConfigLines[1] := '  "Logging": {';
@@ -204,13 +205,13 @@ begin
   ConfigLines[34] := '}';
   SaveStringsToFile(ExpandConstant('{app}') + '\appsettings.json', ConfigLines, False);
 
-  // CONNECTION_INFO.txt olustur
+  // CONNECTION_INFO.txt oluştur
   SetArrayLength(InfoLines, 22);
   InfoLines[0] := '=============================================';
   InfoLines[1] := 'PETEK MESSENGER SUNUCU BAGLANTI BILGILERI';
   InfoLines[2] := '=============================================';
   InfoLines[3] := '';
-  InfoLines[4] := 'Sunucu Adi : ' + GetComputerNameString;
+  InfoLines[4] := 'Sunucu Adı : ' + GetComputerNameString;
   InfoLines[5] := 'Port       : ' + Port;
   InfoLines[6] := '';
   InfoLines[7] := 'ISTEMCI BAGLANTI ADRESLERI:';
@@ -242,12 +243,12 @@ end;
 function NextButtonClick(CurPageID: Integer): Boolean;
 begin
   Result := True;
-  // Admin sifre kontrolu
+  // Admin şifre kontrolü
   if CurPageID = AdminPage.ID then
   begin
     if (AdminPage.Values[1] <> '') and (Length(AdminPage.Values[1]) < 8) then
     begin
-      MsgBox('Sifre en az 8 karakter olmalidir.', mbError, MB_OK);
+      MsgBox('Şifre en az 8 karakter olmalıdır.', mbError, MB_OK);
       Result := False;
     end;
   end;

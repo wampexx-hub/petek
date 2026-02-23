@@ -334,6 +334,17 @@ public partial class ContactListView : Page
 
             if (token.IsCancellationRequested) return;
 
+            // DEBUG: API yanıtını kontrol et
+            if (response == null)
+            {
+                System.Diagnostics.Debug.WriteLine($"[SEARCH] API response is NULL for query: {query}");
+                MessageBox.Show($"Sunucudan yanıt alınamadı.\nArama: {query}", "Bağlantı Hatası", MessageBoxButton.OK, MessageBoxImage.Warning);
+                FilterLocal(query);
+                return;
+            }
+
+            System.Diagnostics.Debug.WriteLine($"[SEARCH] API Success={response.Success}, Message={response.Message}, DataCount={response.Data?.Count ?? 0}");
+
             if (response?.Success == true && response.Data != null)
             {
                 ContactTree.Visibility = Visibility.Collapsed;
@@ -343,12 +354,14 @@ public partial class ContactListView : Page
                 {
                     SearchResultsPanel.Visibility = Visibility.Collapsed;
                     EmptySearchResult.Visibility = Visibility.Visible;
+                    System.Diagnostics.Debug.WriteLine($"[SEARCH] No users found for query: {query}");
                 }
                 else
                 {
                     EmptySearchResult.Visibility = Visibility.Collapsed;
                     SearchResultsPanel.Visibility = Visibility.Visible;
                     SearchResultsTitle.Text = $"Arama Sonuçları ({response.Data.Count})";
+                    System.Diagnostics.Debug.WriteLine($"[SEARCH] Found {response.Data.Count} users for query: {query}");
 
                     foreach (var user in response.Data)
                     {
@@ -369,13 +382,19 @@ public partial class ContactListView : Page
             else
             {
                 // API başarısız - yerel filtrele
+                System.Diagnostics.Debug.WriteLine($"[SEARCH] API failed: Success={response?.Success}, Message={response?.Message}");
+                MessageBox.Show($"Arama başarısız.\nMesaj: {response?.Message ?? "Bilinmeyen hata"}", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
                 FilterLocal(query);
             }
         }
-        catch
+        catch (Exception ex)
         {
+            System.Diagnostics.Debug.WriteLine($"[SEARCH] Exception: {ex.Message}\n{ex.StackTrace}");
             if (!token.IsCancellationRequested)
+            {
+                MessageBox.Show($"Arama sırasında hata:\n{ex.Message}", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
                 FilterLocal(query);
+            }
         }
     }
 

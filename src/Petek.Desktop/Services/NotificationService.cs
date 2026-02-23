@@ -5,7 +5,8 @@ using System.Windows.Forms;
 using System.Windows.Threading;
 using Petek.Shared.DTOs;
 using Petek.Shared.Enums;
-using Application = System.Windows.Application;
+using Microsoft.Extensions.DependencyInjection;
+
 
 namespace Petek.Desktop.Services;
 
@@ -101,7 +102,7 @@ public class NotificationService : INotificationService
         exitItem.Click += (s, e) =>
         {
             _trayIcon.Visible = false;
-            Application.Current.Shutdown();
+            System.Windows.Application.Current.Shutdown();
         };
         contextMenu.Items.Add(exitItem);
 
@@ -189,7 +190,7 @@ public class NotificationService : INotificationService
         // Taskbar'i yanip sondur
         if (_mainWindow != null)
         {
-            Application.Current.Dispatcher.Invoke(() =>
+            System.Windows.Application.Current.Dispatcher.Invoke(() =>
             {
                 FlashTaskbar(_mainWindow);
             });
@@ -278,7 +279,7 @@ public class NotificationService : INotificationService
     {
         if (_mainWindow == null) return;
 
-        Application.Current.Dispatcher.Invoke(() =>
+        System.Windows.Application.Current.Dispatcher.Invoke(() =>
         {
             _mainWindow.Show();
             _mainWindow.ShowInTaskbar = true;
